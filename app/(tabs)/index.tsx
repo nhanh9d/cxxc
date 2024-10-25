@@ -5,7 +5,28 @@ import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
 
+import { getAuth, GoogleAuthProvider, signInWithPopup } from "firebase/auth";
+import FirebaseApp from "../../firebaseConfig";
+import { useCallback, useEffect } from 'react';
+
 export default function HomeScreen() {
+  const auth = getAuth(FirebaseApp);
+  const provider = new GoogleAuthProvider();
+
+  const signInGoogle = useCallback(async () => {
+    const result = await signInWithPopup(auth, provider);
+    const credential = GoogleAuthProvider.credentialFromResult(result);
+    const token = credential?.accessToken;
+    const user = result.user;
+
+    console.log("🚀 ~ signInGoogle ~ token:", token)
+    console.log("🚀 ~ signInGoogle ~ user:", user)
+  }, []);
+
+  useEffect(() => {
+    signInGoogle();
+  });
+
   return (
     <ParallaxScrollView
       headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}

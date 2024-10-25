@@ -13,13 +13,15 @@
       "backgroundColor": "#ffffff"
     },
     "ios": {
-      "supportsTablet": true
+      "supportsTablet": true,
+      "bundleIdentifier": "com.nhanh.cxxc"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#ffffff"
-      }
+      },
+      "package": "com.nhanh.cxxc"
     },
     "web": {
       "bundler": "metro",
@@ -31,6 +33,12 @@
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "extra": {
+      "eas": {
+        "projectId": "f82509ec-410f-4390-969e-80ce9075c44e"
+      }
+    },
+    "owner": "nhanh"
   }
 }
