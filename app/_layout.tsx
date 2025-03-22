@@ -1,3 +1,8 @@
+import Header from "@/components/Header";
+import { ApiProvider } from "@/contexts/ApiContext";
+import { AuthProvider } from "@/contexts/AuthContext";
+import { Providers } from "@/contexts/Providers";
+import { ImageUploadProvider } from "@/contexts/UploadImageContext";
 import { useColorScheme } from "@/hooks/useColorScheme";
 import { DarkTheme, DefaultTheme, ThemeProvider } from "@react-navigation/native";
 import { useFonts } from "expo-font";
@@ -24,8 +29,10 @@ export default function RootLayout() {
     return null;
   }
 
-  return <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-    <StatusBar barStyle={colorScheme === 'dark' ? "light-content" : "dark-content"} />
-    <Stack />
-  </ThemeProvider>;
+  return (
+    <Providers>
+      <StatusBar barStyle={colorScheme === 'dark' ? "light-content" : "dark-content"} />
+      <Stack />
+    </Providers>
+  );
 }
