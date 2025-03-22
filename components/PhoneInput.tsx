@@ -1,38 +1,31 @@
-import React, { useRef } from "react";
+import React, { useEffect } from "react";
 import { ThemedView } from "@/components/ThemedView";
 import { ThemedInput } from "@/components/ThemedInput";
 import { ButtonType, ThemedButton } from "@/components/ThemedButton";
 import { StyleSheet } from "react-native";
-import { FirebaseRecaptchaVerifierModal } from "expo-firebase-recaptcha";
-import RecaptchaModal from "./Recaptcha";
-import { PhoneAuthProvider } from "firebase/auth";
-import { auth } from "@/firebase";
+import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 
 interface Props {
   phoneNumber: string;
   setPhoneNumber: (value: string) => void;
-  setVerificationId: (value: string) => void;
+  setConfirm: (value: FirebaseAuthTypes.ConfirmationResult) => void;
   setInputFocused: (value: boolean) => void;
   nextStep: () => void;
 }
 
-const PhoneInput: React.FC<Props> = ({ phoneNumber, setPhoneNumber, setInputFocused, setVerificationId, nextStep }) => {
-  const recaptchaVerifier = useRef<FirebaseRecaptchaVerifierModal>(null);
+const PhoneInput: React.FC<Props> = ({ phoneNumber, setPhoneNumber, setInputFocused, setConfirm, nextStep }) => {
+  // useEffect(() => {
+  //   if (__DEV__) {
+  //     auth().settings.appVerificationDisabledForTesting = true;
+  //   }
+  // }, []);
 
   const sendVerification = async () => {
-    if (!recaptchaVerifier.current) {
-      console.error("RecaptchaVerifier is not initialized.");
-      return;
-    }
-
     try {
-      const phoneProvider = new PhoneAuthProvider(auth);
-      const id = await phoneProvider.verifyPhoneNumber(
-        phoneNumber,
-        recaptchaVerifier.current
-      );
-      setVerificationId(id);
+      const correctedPhoneNumber = phoneNumber.startsWith("0") ? "+84" + phoneNumber.substring(1) : phoneNumber;
+      const confirm = await auth().signInWithPhoneNumber(correctedPhoneNumber);
 
+      setConfirm(confirm);
       nextStep();
     } catch (error) {
       console.error("Error during sign-in: ", error);
@@ -58,11 +51,6 @@ const PhoneInput: React.FC<Props> = ({ phoneNumber, setPhoneNumber, setInputFocu
         buttonType={ButtonType.primary}
         style={{ marginBottom: 24 }}
         disabled={!phoneNumber} // Disable if phone number is empty
-      />
-
-      <RecaptchaModal
-        ref={recaptchaVerifier}
-        firebaseConfig={auth.app.options}
       />
     </>
   );

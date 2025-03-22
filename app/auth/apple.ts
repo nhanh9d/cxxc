@@ -1,7 +1,7 @@
 import * as AppleAuthentication from "expo-apple-authentication";
-import { Auth, OAuthProvider, signInWithCredential } from "firebase/auth";
+// import { Auth, OAuthProvider, signInWithCredential } from "firebase/auth";
 
-export default async function signInWithApple(auth: Auth) {
+export default async function signInWithApple() {
   try {
     const credential = await AppleAuthentication.signInAsync({
       requestedScopes: [
@@ -11,11 +11,11 @@ export default async function signInWithApple(auth: Auth) {
     });
 
     const { identityToken } = credential;
-    const appleCredential = OAuthProvider.credentialFromJSON({
-      idToken: identityToken,
-    });
+    // const appleCredential = OAuthProvider.credentialFromJSON({
+    //   idToken: identityToken,
+    // });
 
-    await signInWithCredential(auth, appleCredential);
+    // await signInWithCredential(auth, appleCredential);
     alert("Apple Sign-In successful!");
   } catch (error) {
     console.log("Apple Sign-In failed", error);

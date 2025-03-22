@@ -60,7 +60,19 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
         />
 
         <ThemedView style={styles.rowContainer}>
-          <ThemedDatePicker style={styles.halfWidth}
+          <ThemedDatePicker
+            buttonStyle={{
+              flexDirection: "row",
+              justifyContent: "space-between",
+              alignItems: "center",
+              borderWidth: 1,
+              borderColor: "#FFA500",
+              borderRadius: 8,
+              paddingHorizontal: 10,
+              height: 50,
+            }}
+            style={styles.halfWidth}
+            maxDate={new Date()}
             onValueChange={(value) => setPersonalInformation({ ...personalInformation, birthday: value })} />
           <ThemedDropdown
             onValueChange={(value) => setPersonalInformation({ ...personalInformation, gender: value })}
