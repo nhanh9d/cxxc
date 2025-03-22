@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, Platform, Modal, View, ViewProps } from "react-native";
+import { StyleSheet, TouchableOpacity, Platform, Modal, View, ViewProps, StyleProp, ViewStyle, TextStyle } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
 import { ThemedText } from "@/components/ThemedText";
 import { FontAwesome } from "@expo/vector-icons";
@@ -8,35 +8,52 @@ import { ThemedButton } from "./ThemedButton";
 
 export type ThemedDatePickerProps = ViewProps & {
   showLabel?: boolean;
+  label?: string;
+  labelStyle?: StyleProp<TextStyle>
+  showCalendarIcon?: boolean;
+  buttonStyle?: StyleProp<ViewStyle>
+  minDate?: Date,
+  maxDate?: Date,
+  defaultValue?: Date,
   onValueChange?: (value: Date | undefined) => void; // Callback for selection
 };
 
-export default function ThemedDatePicker({ showLabel, style,
-  onValueChange, }: ThemedDatePickerProps) {
-  const [date, setDate] = useState(new Date());
+export default function ThemedDatePicker({
+  showLabel,
+  label = "Ngày sinh",
+  labelStyle,
+  showCalendarIcon = true,
+  style,
+  buttonStyle,
+  minDate,
+  maxDate,
+  defaultValue,
+  onValueChange
+}: ThemedDatePickerProps) {
+  const [date, setDate] = useState<Date>(defaultValue || new Date());
   const [showPicker, setShowPicker] = useState(false);
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     if (Platform.OS !== "ios") setShowPicker(false); // Close picker for Android
     if (selectedDate) setDate(selectedDate); // Update the selected date
-    onValueChange?.(selectedDate); 
+    onValueChange?.(selectedDate);
   };
 
   return (
     <ThemedView style={style}>
-      {showLabel && <ThemedText style={styles.label}>Ngày sinh</ThemedText>}
+      {showLabel && <ThemedText style={[styles.label, labelStyle]}>{label}</ThemedText>}
       <TouchableOpacity
-        style={styles.pickerContainer}
+        style={buttonStyle}
         onPress={() => setShowPicker(true)}
       >
         <ThemedText style={styles.dateText}>
-          {date.toLocaleDateString("vi-VN", {
+          {date ? date.toLocaleDateString("vi-VN", {
             day: "2-digit",
             month: "2-digit",
             year: "numeric",
-          })}
+          }) : "Chọn ngày"}
         </ThemedText>
-        <FontAwesome name="calendar" size={20} color="#FFA500" />
+        {showCalendarIcon && <FontAwesome name="calendar" size={20} color="#FFA500" />}
       </TouchableOpacity>
 
       {/* For iOS: Use a Modal for better control */}
@@ -51,12 +68,17 @@ export default function ThemedDatePicker({ showLabel, style,
                 onChange={(event, selectedDate) => {
                   handleDateChange(event, selectedDate);
                 }}
-                maximumDate={new Date()}
+                maximumDate={maxDate}
+                minimumDate={minDate}
               />
               <ThemedButton
                 title="Xong"
+                textStyle={{ color: "#FFF" }}
                 style={styles.modalCloseButton}
-                onPress={() => setShowPicker(false)}
+                onPress={() => {
+                  onValueChange?.(date);
+                  setShowPicker(false);
+                }}
               />
             </ThemedView>
           </ThemedView>
@@ -66,11 +88,12 @@ export default function ThemedDatePicker({ showLabel, style,
       {/* For Android: Inline Picker */}
       {Platform.OS === "android" && showPicker && (
         <DateTimePicker
-          value={date}
+          value={date || new Date()}
           mode="date"
           display="default"
           onChange={handleDateChange}
-          maximumDate={new Date()}
+          maximumDate={maxDate}
+          minimumDate={minDate}
         />
       )}
     </ThemedView>
@@ -82,16 +105,6 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: "bold",
     marginBottom: 10,
-  },
-  pickerContainer: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    borderWidth: 1,
-    borderColor: "#FFA500",
-    borderRadius: 8,
-    paddingHorizontal: 10,
-    height: 50,
   },
   dateText: {
     fontSize: 16,

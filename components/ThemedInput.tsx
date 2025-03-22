@@ -26,7 +26,7 @@ export function ThemedInput({
     <TextInput
       style={[
         styles.input,
-        { backgroundColor, color: textColor, borderColor: borderColor || borderDefaultColor },
+        { backgroundColor: "#FFF", color: "#000", borderColor: borderColor || borderDefaultColor },
         style,
       ]}
       placeholderTextColor={useThemeColor({}, "placeholder")}
