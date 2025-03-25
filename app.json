@@ -1,12 +1,12 @@
 {
   "expo": {
-    "name": "Chơi xe2 chơi",
+    "name": "Chơi xe xe chơi",
     "slug": "cxxc",
     "version": "1.0.0",
     "orientation": "portrait",
-    "icon": "./assets/images/icon.png",
+    "icon": "./assets/images/logo.png",
     "splash": {
-      "image": "./assets/images/splash-icon.png",
+      "image": "./assets/images/logo.png",
       "resizeMode": "contain", // or "cover"
       "backgroundColor": "#ffffff"
     },
@@ -48,8 +48,7 @@
         "RECORD_AUDIO"
       ],
       "adaptiveIcon": {
-        "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#ffffff"
+        "foregroundImage": "./assets/images/logo.png"
       },
       "googleServicesFile": "./google-services.json",
       "package": "com.cxxc"
@@ -64,7 +63,7 @@
       [
         "expo-splash-screen",
         {
-          "image": "./assets/images/splash-icon.png",
+          "image": "./assets/images/logo.png",
           "imageWidth": 200,
           "resizeMode": "contain",
           "backgroundColor": "#ffffff"

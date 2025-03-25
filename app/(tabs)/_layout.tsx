@@ -1,6 +1,6 @@
 import { Tabs, useNavigation, useRouter, useSegments } from 'expo-router';
 import React, { useEffect } from 'react';
-import { Platform, TouchableOpacity } from 'react-native';
+import { Platform, TouchableOpacity, View } from 'react-native';
 
 import { HapticTab } from '@/components/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -20,32 +20,43 @@ export default function TabLayout() {
     const currentScreen = segments[segments.length - 1];
     let title = "Khám phá";
 
-    if (currentScreen == "friend") {
-      title = "Kết bạn"
+    switch (currentScreen) {
+      case "friend":
+        title = "Kết bạn";
+        break;
+      case "chat":
+        title = "Nhắn tin";
+        break;
+      case "profile":
+        title = "Hồ sơ";
+        break;
+      default:
+        title = "Khám phá";
     }
 
     navigation.setOptions({
       headerLeft: () => (
-        <ThemedText type="title">{title}</ThemedText>),
+        <ThemedText type="title" style={{ paddingLeft: 4 }}>{title}</ThemedText>),
       headerRight: () => (
         <TouchableOpacity
           onPress={() => router.push("/notifications")}
-          style={{ marginRight: 15, borderRadius: 100, backgroundColor: "#FFF", borderWidth: 1, borderColor: "#EEEEEF", padding: 2 }}>
+          style={{ marginRight: 4, borderRadius: 100, backgroundColor: "#FFF", borderWidth: 1, borderColor: "#EEEEEF", padding: 2 }}>
           <MaterialIcons name="notifications-none" size={24} color="black" />
         </TouchableOpacity>
       ),
       headerTitle: "",
       headerStyle: {
         backgroundColor: "#FFFCEE",
-        shadowOpacity: 0, // Remove shadow (iOS)
-        elevation: 0, // Remove shadow (Android)
-        borderBottomWidth: 0, // Remove bottom border
+        shadowOpacity: 0,
+        elevation: 0,
+        borderBottomWidth: 0,
       }
     });
   }, [navigation, segments]);
 
   return (
     <Tabs
+      backBehavior="history"
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
         headerShown: false,

@@ -114,7 +114,7 @@ export default function PhoneScreen() {
     switch (step) {
       default:
       case accountSteps.fillPhone:
-        navigation.goBack();
+        router.back();
         break;
       case accountSteps.fillOTP:
         setTitle("Nhập số điện thoại");

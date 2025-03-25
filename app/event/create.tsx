@@ -23,7 +23,7 @@ export default function CreateScreen() {
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ flexDirection: "row", alignItems: "center" }}>
+        <TouchableOpacity onPress={() => router.replace("/(tabs)")} style={{ flexDirection: "row", alignItems: "center" }}>
           <MaterialIcons name="chevron-left" size={24} color="#999" />
           <ThemedText>Quay lại</ThemedText>
         </TouchableOpacity>
@@ -40,13 +40,13 @@ export default function CreateScreen() {
 
   const { uploadImage } = useImageUpload();
   const chooseImage = async () => {
-    const imageUrl = await uploadImage({ aspect: [1, 3] });
+    const imageUrl = await uploadImage({ aspect: [3, 2] });
     if (imageUrl) {
       setEvent({ ...event, banner: imageUrl });
     }
   }
 
-  const [event, setEvent] = useState<EventDto>();
+  const [event, setEvent] = useState<EventDto>({ startDate: new Date() });
   const [isValid, setIsValid] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const { eventId } = useLocalSearchParams();
@@ -93,7 +93,7 @@ export default function CreateScreen() {
     await AsyncStorage.setItem("createdEvent", JSON.stringify(response?.data));
 
     if (response?.data) {
-      router.push({
+      router.replace({
         pathname: "/event/after-create",
         params: { eventId: response.data.id },
       })
@@ -110,7 +110,7 @@ export default function CreateScreen() {
     await AsyncStorage.setItem("createdEvent", JSON.stringify(response?.data));
 
     if (response?.data) {
-      router.push({
+      router.replace({
         pathname: "/event/after-create",
         params: { eventId: response.data.id },
       })
@@ -134,7 +134,12 @@ export default function CreateScreen() {
       >
         {/* banner */}
         <ThemedView lightColor="#FFFCEE" style={styles.banner}>
-          <Image source={event?.banner ? { uri: event.banner } : require("../../assets/images/banner-placeholder.png")} style={{ width: "100%", height: 200, resizeMode: "cover", borderRadius: 12 }} />
+          <Image
+            source={
+              event?.banner
+                ? { uri: `${Constants.expoConfig?.extra?.fileUrl}/${event.banner}` }
+                : require("../../assets/images/banner-placeholder.png")}
+            style={{ width: "100%", height: 200, resizeMode: "cover", borderRadius: 12 }} />
           <ThemedButton
             imageSource={require("../../assets/images/picture-icon.png")}
             imageStyle={{ width: 16, height: 16 }}
@@ -207,7 +212,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 12,
+    paddingHorizontal: 20,
   },
   text: {
     fontSize: 24,

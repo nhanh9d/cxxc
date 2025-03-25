@@ -17,17 +17,28 @@ export default function IndexScreen() {
   const [noMoreData, setNoMoreData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  const [myRidesCount, setMyRidesCount] = useState(0);
   const axios = useApi();
   const router = useRouter();
 
   const fetchData = async () => {
+    console.log("🚀 ~ fetchData ~ `${baseEventUrl}?page=${page}&limit=4`:", `${baseEventUrl}?page=${page}&limit=4`)
     const response = await axios.get<EventDto[]>(`${baseEventUrl}?page=${page}&limit=4`);
-
     return response.data;
+  }
+
+  const fetchMyRidesCount = async () => {
+    try {
+      const response = await axios.get<{ count: number }>(`${baseEventUrl}?page=${page}&limit=&mine=true&count=true`);
+      setMyRidesCount(response.data.count);
+    } catch (error) {
+      console.log("🚀 ~ fetchMyRidesCount ~ error:", error);
+    }
   }
 
   useEffect(() => {
     loadMoreEvents();
+    fetchMyRidesCount();
 
     return () => {
       setLoading(false);
@@ -65,17 +76,23 @@ export default function IndexScreen() {
     setNoMoreData(data.length === 0);
     setEvents(data);
     setRefreshing(false);
+
+    if (data.length !== 0) {
+      setPage((prevPage) => prevPage + 1);
+    }
   }, []);
 
   return (
     <ThemedView style={styles.container}>
-      <TouchableOpacity style={styles.myRideButton} onPress={() => router.push("/event/attempted-events")}>
-        <View style={{ flexDirection: "row", gap: 8 }}>
-          <MaterialCommunityIcons name="swap-vertical-variant" size={16} color="#FF9500" />
-          <ThemedText>Chuyến đi của tôi</ThemedText>
-        </View>
-        <Fontisto name="angle-right" size={16} color="#FF9500" />
-      </TouchableOpacity>
+      {myRidesCount > 0 && (
+        <TouchableOpacity style={styles.myRideButton} onPress={() => router.push("/event/attempted-events")}>
+          <View style={{ flexDirection: "row", gap: 8 }}>
+            <MaterialCommunityIcons name="swap-vertical-variant" size={16} color="#FF9500" />
+            <ThemedText>Chuyến đi của tôi ({myRidesCount})</ThemedText>
+          </View>
+          <Fontisto name="angle-right" size={16} color="#FF9500" />
+        </TouchableOpacity>
+      )}
       <FlatList
         data={events}
         keyExtractor={(item) => `${item.id}`}
@@ -99,7 +116,7 @@ export default function IndexScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 18,
+    padding: 20,
     backgroundColor: "#FFFCEE"
   },
   myRideButton: {

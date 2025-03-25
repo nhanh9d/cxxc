@@ -42,7 +42,7 @@ export function DateRangePicker({
             minDate={minStartDate}
             maxDate={maxStartDate}
             showLabel={true}
-            style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10 }}
+            style={{ flexDirection: "row", justifyContent: "space-between", marginBottom: 10, backgroundColor: "transparent" }}
             label="Ngày khởi hành"
             onValueChange={setStartDate} showCalendarIcon={false} />
         </View>
@@ -65,7 +65,7 @@ export function DateRangePicker({
             minDate={minEndDate}
             maxDate={maxEndDate}
             showLabel={true}
-            style={{ flexDirection: "row", justifyContent: "space-between" }}
+            style={{ flexDirection: "row", justifyContent: "space-between", backgroundColor: "transparent" }}
             label="Ngày trở về"
             onValueChange={setEndDate} showCalendarIcon={false} />
         </View>
@@ -79,11 +79,8 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     padding: 15,
     borderRadius: 12,
-    elevation: 2, // Shadow for Android
-    shadowColor: "#000",
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
+    borderWidth: 1,
+    borderColor: "#EEEEEF",
   },
   row: {
     flexDirection: "row",

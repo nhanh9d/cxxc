@@ -79,8 +79,6 @@ export default function AfterCreateScreen() {
     <ThemedView lightColor="#FFFCEE" style={styles.container}>
 
       <ThemedText type="title" style={{ marginBottom: 24, marginTop: 12 }}>Chuyến đi đã được tạo!</ThemedText>
-      {/* <EventCard /> */}
-
       <ThemedView lightColor="#FFFCEE" style={{ flex: 1 }}>
         {event && <EventCard item={event} />}
         <TouchableOpacity onPress={() => viewDetail()} style={[styles.viewDetailButton, {
@@ -110,7 +108,7 @@ const styles = StyleSheet.create({
   },
   container: {
     flex: 1,
-    padding: 12,
+    paddingHorizontal: 20,
   },
   text: {
     fontSize: 24,
