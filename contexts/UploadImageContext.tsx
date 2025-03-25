@@ -1,10 +1,10 @@
-import React, { createContext, useContext, useEffect, useState } from 'react';
+import React, { createContext, useContext } from 'react';
 import axios from 'axios';
 import Constants from 'expo-constants';
 import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from 'expo-file-system';
 import { useAuth } from './AuthContext';
-
+import { Buffer } from 'buffer';
 type uploadImageParams = {
   aspect: [number, number]
 }
@@ -35,7 +35,6 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     }
 
-    const baseFileUrl = `${Constants.expoConfig?.extra?.fileUrl}/user/${userId ?? DEFAULT_BUCKET}`;
     const result = await ImagePicker.launchImageLibraryAsync({
       mediaTypes: "images",
       allowsEditing: true,
@@ -53,13 +52,10 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const fileData = await FileSystem.readAsStringAsync(image.uri, {
       encoding: FileSystem.EncodingType.Base64,
     });
-    const binaryData = atob(fileData);
-    const buffer = new Uint8Array(binaryData.length);
-    for (let i = 0; i < binaryData.length; i++) {
-      buffer[i] = binaryData.charCodeAt(i);
-    }
 
-    await axios.put(
+    const buffer = Buffer.from(fileData, 'base64');
+
+    const response = await axios.put(
       uploadUrl, // MinIO endpoint
       buffer,
       {
@@ -70,7 +66,7 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
       }
     );
 
-    return `${baseFileUrl}/${fileName}`;
+    return `user/${userId ?? DEFAULT_BUCKET}/${fileName}`;
   }
 
   return (
