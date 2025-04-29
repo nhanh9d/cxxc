@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedText } from "@/components/ThemedText";
-import { ButtonType, ThemedButton } from "@/components/ThemedButton";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { ButtonType, ThemedButton } from "@/components/ui/ThemedButton";
 import { useNavigation, useRouter } from "expo-router";
 import {
   StyleSheet,
@@ -13,14 +13,14 @@ import {
   TouchableOpacity,
 } from "react-native";
 import axios from 'axios';
-import { ThemedScrollView } from "@/components/ThemedScrollView";
+import { ThemedScrollView } from "@/components/layout/ThemedScrollView";
 import Constants from 'expo-constants';
-import { ThemedImageUpload } from "@/components/ThemedImageUpload";
-import PhoneInput from "@/components/PhoneInput";
-import OTPInput from "@/components/OTPInput";
-import PersonalInfoForm from "@/components/PersonalInfoForm";
-import KnowYourCustomer from "@/components/KnowYourCustomer";
-import MyBikeInput from "@/components/MyBikeInput";
+import { ThemedImageUpload } from "@/components/ui/ThemedImageUpload";
+import PhoneInput from "@/components/inputs/PhoneInput";
+import OTPInput from "@/components/inputs/OTPInput";
+import PersonalInfoForm from "@/components/forms/PersonalInfoForm";
+import KnowYourCustomer from "@/components/forms/KnowYourCustomer";
+import MyBikeInput from "@/components/inputs/MyBikeInput";
 import { BikeInfo } from "@/types/bikeInfo";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";

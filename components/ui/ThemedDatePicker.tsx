@@ -1,10 +1,10 @@
 import React, { useState } from "react";
-import { StyleSheet, TouchableOpacity, Platform, Modal, View, ViewProps, StyleProp, ViewStyle, TextStyle } from "react-native";
+import { StyleSheet, TouchableOpacity, Platform, Modal, ViewProps, StyleProp, ViewStyle, TextStyle } from "react-native";
 import DateTimePicker from "@react-native-community/datetimepicker";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/ui/ThemedText";
 import { FontAwesome } from "@expo/vector-icons";
-import { ThemedView } from "./ThemedView";
-import { ThemedButton } from "./ThemedButton";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ThemedButton } from "@/components/ui/ThemedButton";
 
 export type ThemedDatePickerProps = ViewProps & {
   showLabel?: boolean;

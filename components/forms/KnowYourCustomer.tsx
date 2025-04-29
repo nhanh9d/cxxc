@@ -1,9 +1,9 @@
 import React, { useState } from "react";
 import { Modal, Alert, Image, StyleSheet } from "react-native";
 import { useCameraPermissions, CameraView } from "expo-camera";
-import { ThemedView } from "@/components/ThemedView";
-import { ButtonType, ThemedButton } from "@/components/ThemedButton";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ButtonType, ThemedButton } from "@/components/ui/ThemedButton";
+import { ThemedText } from "@/components/ui/ThemedText";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import Constants from "expo-constants";
 import axios from "axios";

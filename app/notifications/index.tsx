@@ -1,36 +1,15 @@
-import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
+import { useNavigation, useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/ui/ThemedText";
 import { useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
 import Constants from "expo-constants";
-import { ThemedScrollView } from "@/components/ThemedScrollView";
+import { ThemedScrollView } from "@/components/layout/ThemedScrollView";
 import React from "react";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedView } from "@/components/layout/ThemedView";
 import { useApi } from "@/contexts/ApiContext";
-import { NotificationCard } from "@/components/NotificationCard";
-
-export enum NotificationType {
-  EVENT_INVITATION = "EVENT_INVITATION",
-  EVENT_UPDATE = "EVENT_UPDATE",
-  EVENT_CANCEL = "EVENT_CANCEL",
-  EVENT_MEMBER_JOINED = 'EVENT_MEMBER_JOINED',
-  EVENT_MEMBER_LEFT = 'EVENT_MEMBER_LEFT',
-  EVENT_FINISHED = 'EVENT_FINISHED',
-}
-
-export interface Notification {
-  id: string;
-  type: NotificationType;
-  title: string;
-  content: string;
-  metadata: Record<string, any>;
-  isRead: boolean;
-  isPushed: boolean;
-  userId: number;
-  createdAt: Date;
-}
-
+import { NotificationCard } from "@/components/cards/NotificationCard";
+import { NotificationType, Notification } from "@/types/notification";
 
 export default function NotificationsScreen() {
   const router = useRouter();

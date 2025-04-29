@@ -1,4 +1,4 @@
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/ui/ThemedText";
 import React, { useEffect, useState } from "react";
 import { UserDto } from "@/types/user";
 import Constants from "expo-constants";

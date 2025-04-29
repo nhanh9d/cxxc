@@ -1,8 +1,8 @@
 import React, { useEffect, useState } from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedInput } from "@/components/ThemedInput";
-import { ButtonType, ThemedButton } from "@/components/ThemedButton";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ThemedInput } from "@/components/inputs/ThemedInput";
+import { ButtonType, ThemedButton } from "@/components/ui/ThemedButton";
+import { ThemedText } from "@/components/ui/ThemedText";
 import { StyleSheet } from "react-native";
 import axios from "axios";
 import { useRouter } from "expo-router";
@@ -32,7 +32,7 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
     const response = await axios.get(url);
 
     if (response.data) {
-      await saveToken(response.data.accessToken);
+      await saveToken("accessToken", response.data.accessToken);
       setToken(response.data.accessToken);
 
       router.push("/(tabs)");

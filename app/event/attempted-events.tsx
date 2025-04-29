@@ -1,10 +1,10 @@
 import { useNavigation, useRouter } from "expo-router";
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { ThemedView } from "@/components/layout/ThemedView";
 import { useEffect, useState, useCallback } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
-import { EventCard } from "@/components/EventCard";
+import { EventCard } from "@/components/cards/EventCard";
 import { EventDto } from "@/types/event";
 import Constants from "expo-constants";
 import { useApi } from "@/contexts/ApiContext";

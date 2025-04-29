@@ -3,7 +3,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { useNavigation } from "expo-router";
 import { SafeAreaView } from "react-native-safe-area-context";
 import { MaterialIcons } from "@expo/vector-icons";
-import { ThemedText } from "./ThemedText";
+import { ThemedText } from "@/components/ui/ThemedText";
 
 const Header = ({ title, backText, onBackClick }: { title: string, backText: string | undefined, onBackClick: () => void }) => {
   const navigation = useNavigation();

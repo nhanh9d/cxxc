@@ -1,14 +1,14 @@
 import Constants from "expo-constants";
 import React, { useCallback, useEffect, useState } from "react";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedView } from "@/components/layout/ThemedView";
 import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
-import FloatingButton from "@/components/FloatingButton";
+import FloatingButton from "@/components/layout/FloatingButton";
 import { useRouter } from "expo-router";
 import { EventDto } from "@/types/event";
-import { EventCard } from "@/components/EventCard";
+import { EventCard } from "@/components/cards/EventCard";
 import { useApi } from "@/contexts/ApiContext";
 import { Fontisto, MaterialCommunityIcons } from "@expo/vector-icons";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/ui/ThemedText";
 
 export default function IndexScreen() {
   const baseEventUrl = `${Constants.expoConfig?.extra?.apiUrl}/event`;

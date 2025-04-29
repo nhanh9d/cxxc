@@ -1,10 +1,10 @@
 import React from "react";
 import { View, StyleSheet, Image, TouchableOpacity } from "react-native";
 import { EventDto } from "@/types/event";
-import { ThemedText } from "./ThemedText";
+import { ThemedText } from "@/components/ui/ThemedText";
 import { useRouter } from "expo-router";
 import { formattedDate } from "@/helpers/date";
-import { IconSymbol } from "./ui/IconSymbol";
+import { IconSymbol } from "@/components/ui/IconSymbol";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 

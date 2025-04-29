@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedInput } from "@/components/ThemedInput";
-import { ButtonType, ThemedButton } from "@/components/ThemedButton";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ThemedInput } from "@/components/inputs/ThemedInput";
+import { ButtonType, ThemedButton } from "@/components/ui/ThemedButton";
 import { StyleSheet } from "react-native";
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
 

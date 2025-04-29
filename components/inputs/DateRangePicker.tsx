@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import { View, StyleSheet } from "react-native";
-import ThemedDatePicker from "./ThemedDatePicker";
+import ThemedDatePicker from "@/components/ui/ThemedDatePicker";
 
 type DateRangePickerProp = {
   setStartDate: (value: Date | undefined) => void,

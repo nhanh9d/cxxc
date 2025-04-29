@@ -1,12 +1,12 @@
 import React from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedInput } from "@/components/ThemedInput";
-import { ThemedButton } from "@/components/ThemedButton";
-import ThemedDropdown from "@/components/ThemedDropdown";
-import ThemedDatePicker from "@/components/ThemedDatePicker";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ThemedButton } from "@/components/ui/ThemedButton";
+import ThemedDropdown from "@/components/ui/ThemedDropdown";
+import ThemedDatePicker from "@/components/ui/ThemedDatePicker";
 import axios from "axios";
 import Constants from "expo-constants";
 import { StyleSheet } from "react-native";
+import { ThemedInput } from "../inputs/ThemedInput";
 
 interface Props {
   personalInformation: any;
@@ -51,7 +51,7 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
     <>
       <ThemedView style={styles.halfWidth} lightColor="#FFFCEE" darkColor="#2B2A27">
         <ThemedInput
-          onChangeText={(value) => { setPersonalInformation({ ...personalInformation, fullname: value }) }}
+          onChangeText={(value: string) => { setPersonalInformation({ ...personalInformation, fullname: value }) }}
           placeholder="Tên đầy đủ"
           keyboardType="default"
           style={styles.input}

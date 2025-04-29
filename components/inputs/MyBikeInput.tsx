@@ -1,14 +1,14 @@
 import React from "react";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedInput } from "@/components/ThemedInput";
-import { ButtonType, ThemedButton } from "@/components/ThemedButton";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ButtonType, ThemedButton } from "@/components/ui/ThemedButton";
 import { StyleSheet } from "react-native";
 import axios from "axios";
 import Constants from "expo-constants";
 import { CylinderCapacity } from "@/constants/CylinderCapacity";
-import ThemedDropdown from "./ThemedDropdown";
-import { ThemedImageUpload } from "./ThemedImageUpload";
+import ThemedDropdown from "@/components/ui/ThemedDropdown";
+import { ThemedImageUpload } from "@/components/ui/ThemedImageUpload";
 import { BikeInfo } from "@/types/bikeInfo";
+import { ThemedInput } from "@/components/inputs/ThemedInput";
 
 interface Props {
   userId: number | undefined;
@@ -45,7 +45,7 @@ const MyBikeInput: React.FC<Props> = ({ userId, firebaseUserId, bikeInfomation, 
     <>
       <ThemedView style={styles.halfWidth} lightColor="#FFFCEE" darkColor="#2B2A27">
         <ThemedInput
-          onChangeText={(value) => { setBikeInformation({ ...bikeInfomation, fullname: value }) }}
+          onChangeText={(value: string) => { setBikeInformation({ ...bikeInfomation, fullname: value }) }}
           placeholder="Tên xe"
           keyboardType="default"
           style={styles.input}
@@ -55,7 +55,7 @@ const MyBikeInput: React.FC<Props> = ({ userId, firebaseUserId, bikeInfomation, 
         <ThemedDropdown
           options={CylinderCapacity}
           placeholder="Dung tích xi lanh"
-          onValueChange={(value) => setBikeInformation({ ...bikeInfomation, cylinderCapacity: value })}
+          onValueChange={(value: string) => setBikeInformation({ ...bikeInfomation, cylinderCapacity: value })}
         />
       </ThemedView>
 

@@ -1,12 +1,12 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { StyleSheet, TouchableOpacity, Image, View, Platform, Alert } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/ui/ThemedText";
 import { useEffect, useState } from "react";
 import { EventDto, EventMember, EventStatistic } from "@/types/event";
 import { MaterialCommunityIcons, MaterialIcons } from "@expo/vector-icons";
 import Constants from "expo-constants";
 import { formattedDate } from "@/helpers/date";
-import { ThemedScrollView } from "@/components/ThemedScrollView";
+import { ThemedScrollView } from "@/components/layout/ThemedScrollView";
 import React from "react";
 import { useApi } from "@/contexts/ApiContext";
 import { useAuth } from "@/contexts/AuthContext";

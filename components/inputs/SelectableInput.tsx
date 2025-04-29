@@ -7,8 +7,10 @@ import {
   Modal,
   TextInput,
   Button,
+  Platform,
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
+import { Picker } from "@react-native-picker/picker";
 
 type SelectableInputProps = {
   icon: React.ReactNode;
@@ -44,6 +46,63 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
     setModalVisible(false);
   };
 
+  if (numeric && Platform.OS === 'ios') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.icon}>{icon}</View>
+        <View style={styles.textContainer}>
+          <Text style={[styles.label, value !== undefined && styles.labelWithValue]}>
+            {label}
+          </Text>
+        </View>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={inputValue}
+            onValueChange={(itemValue) => {
+              setInputValue(itemValue);
+              onSave(Number(itemValue));
+            }}
+            style={styles.picker}
+          >
+            <Picker.Item label="Không giới hạn" value="" />
+            {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+              <Picker.Item key={num} label={num.toString()} value={num.toString()} />
+            ))}
+          </Picker>
+        </View>
+      </View>
+    );
+  }
+
+  if (numeric && Platform.OS === 'android') {
+    return (
+      <View style={styles.container}>
+        <View style={styles.icon}>{icon}</View>
+        <View style={styles.textContainer}>
+          <Text style={[styles.label, value !== undefined && styles.labelWithValue]}>
+            {label}
+          </Text>
+        </View>
+        <View style={styles.pickerContainer}>
+          <Picker
+            selectedValue={inputValue}
+            onValueChange={(itemValue) => {
+              setInputValue(itemValue);
+              onSave(Number(itemValue));
+            }}
+            style={styles.picker}
+            dropdownIconColor="#999"
+          >
+            <Picker.Item label="Không giới hạn" value="" />
+            {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+              <Picker.Item key={num} label={num.toString()} value={num.toString()} />
+            ))}
+          </Picker>
+        </View>
+      </View>
+    );
+  }
+
   return (
     <>
       {/* Clickable Component */}
@@ -53,16 +112,8 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
           <Text style={[styles.label, value !== undefined && styles.labelWithValue]}>
             {label}
           </Text>
-          {!numeric && value !== undefined && <Text style={styles.value}>{truncateText(value)}</Text>}
+          {value !== undefined && <Text style={styles.value}>{truncateText(value)}</Text>}
         </View>
-
-        {/* Show number or "Không giới hạn" next to chevron */}
-        {numeric && (
-          <Text style={styles.numericValue}>
-            {value ? value : "Không giới hạn"}
-          </Text>
-        )}
-
         <AntDesign name="right" size={18} color="#999" />
       </TouchableOpacity>
 
@@ -119,12 +170,6 @@ const styles = StyleSheet.create({
     color: "#333",
     fontWeight: "500",
   },
-  numericValue: {
-    fontSize: 16,
-    color: "#333",
-    fontWeight: "500",
-    marginRight: 8, // Adds spacing before the chevron
-  },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
@@ -160,6 +205,15 @@ const styles = StyleSheet.create({
     justifyContent: "space-between",
     width: "100%",
     marginTop: 15,
+  },
+  pickerContainer: {
+    flex: 1,
+    height: 50,
+    justifyContent: 'center',
+  },
+  picker: {
+    height: 50,
+    width: '100%',
   },
 });
 

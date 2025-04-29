@@ -5,8 +5,8 @@ import {
   TouchableOpacity,
   Alert,
 } from "react-native";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ThemedText } from "@/components/ui/ThemedText";
 import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import Constants from 'expo-constants';

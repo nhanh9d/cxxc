@@ -1,13 +1,13 @@
 import React, { useEffect } from "react";
 import { StyleSheet, Image } from "react-native";
 import { useNavigation, useRouter } from "expo-router";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedView } from "@/components/layout/ThemedView";
 import * as Notifications from 'expo-notifications';
 import { getToken, saveToken } from "@/helpers/secureStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApi } from "@/contexts/ApiContext";
 import Constants from "expo-constants";
-import { ThemedText } from "@/components/ThemedText";
+import { ThemedText } from "@/components/ui/ThemedText";
 
 export default function LoginScreen() {
   const router = useRouter();

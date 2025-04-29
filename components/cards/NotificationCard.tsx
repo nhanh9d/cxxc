@@ -1,10 +1,7 @@
 import { StyleSheet, TouchableOpacity, View, Image } from "react-native";
-import { ThemedText } from "./ThemedText";
-import { MaterialIcons } from "@expo/vector-icons";
-import { Notification } from "@/app/notifications";
-import { NotificationType } from "@/app/notifications";
-import { formattedDate } from "@/helpers/date";
 import { useRouter } from "expo-router";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { NotificationType, Notification } from "@/types/notification";
 
 interface NotificationCardProps {
   notification: Notification;

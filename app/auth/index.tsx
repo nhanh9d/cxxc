@@ -2,9 +2,9 @@ import React, { useEffect } from "react";
 import { StyleSheet, Image } from "react-native";
 import signInWithGoogle from "./google";
 import { useNavigation, useRouter } from "expo-router";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedButton } from "@/components/ThemedButton";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { ThemedButton } from "@/components/ui/ThemedButton";
 import * as Notifications from 'expo-notifications';
 
 export default function LoginScreen() {
