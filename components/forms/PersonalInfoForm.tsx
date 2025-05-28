@@ -7,7 +7,7 @@ import axios from "axios";
 import Constants from "expo-constants";
 import { StyleSheet } from "react-native";
 import { ThemedInput } from "../inputs/ThemedInput";
-
+import { useAuth } from "@/contexts/AuthContext";
 interface Props {
   personalInformation: any;
   phoneNumber: string;
@@ -27,19 +27,25 @@ type UserDto = {
   firebaseId: string;
 }
 
+type UserResponseDto = UserDto & {
+  accessToken: string;
+}
+
 const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, firebaseUserId, setPersonalInformation, setInputFocused, nextStep }) => {
+  const { setToken } = useAuth();
   const baseUserUrl = `${Constants.expoConfig?.extra?.apiUrl}/user/firebase`;
 
   const createUser = async () => {
     try {
       const url = `${baseUserUrl}`;
-      const response = await axios.post<UserDto>(url, {
+      const response = await axios.post<UserResponseDto>(url, {
         ...personalInformation,
         phone: phoneNumber, firebaseId: firebaseUserId, isActive: true
       });
 
       if (response.data) {
         setPersonalInformation({ ...personalInformation, userId: response.data.id });
+        setToken(response.data.accessToken);
         nextStep();
       }
     } catch (error) {

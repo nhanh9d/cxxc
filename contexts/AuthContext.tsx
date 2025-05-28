@@ -34,7 +34,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
     setToken(null);
     setUserId(undefined);
     await removeToken();
-    await removeToken("accessToken");
     await removeToken("pushToken");
     router.replace("/auth");
   }

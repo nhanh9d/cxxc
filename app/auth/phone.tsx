@@ -207,7 +207,7 @@ export default function PhoneScreen() {
           </>}
           <ThemedText style={styles.title}>{title}</ThemedText>
           <ThemedText style={[styles.subtitle, step === accountSteps.finish ? { flex: 1 } : {}]}>
-            {subtitle} {step}
+            {subtitle}
           </ThemedText>
           {step === accountSteps.fillPhone ? (
             <PhoneInput

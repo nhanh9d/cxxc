@@ -20,7 +20,7 @@ export default function LoginScreen() {
   }, [navigation]);
 
   useEffect(() => {
-    const checkToken = async (
+    const checkPushToken = async (
     ) => {
       const status = await messaging().requestPermission();
       const enabled =
@@ -30,7 +30,7 @@ export default function LoginScreen() {
       if (!enabled) {
         return;
       }
-
+      
       const token = await messaging().getToken();
       const storedPushToken = await getToken("pushToken");
       try {
@@ -44,7 +44,7 @@ export default function LoginScreen() {
       }
     };
 
-    checkToken();
+    checkPushToken();
   }, []);
 
   useEffect(() => {
