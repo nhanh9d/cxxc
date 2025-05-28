@@ -32,14 +32,14 @@ export default function LoginScreen() {
 
       const token = await Notifications.getDevicePushTokenAsync();
       const storedPushToken = await getToken("pushToken");
+      try {
+        await axios.put(`${Constants.expoConfig?.extra?.apiUrl}/user/push-token`, { pushToken: token.data });
+      } catch (error) {
+        console.log("Lỗi khi cập nhật push token:", error);
+      }
       
       if (!storedPushToken || storedPushToken !== token.data) {
         await saveToken("pushToken", token.data);
-        try {
-          await axios.put(`${Constants.expoConfig?.extra?.apiUrl}/user/push-token`, { pushToken: token.data });
-        } catch (error) {
-          console.log("Lỗi khi cập nhật push token:", error);
-        }
       }
     };
 
@@ -57,6 +57,7 @@ export default function LoginScreen() {
           if (!decoded.exp || decoded.exp * 1000 < Date.now()) {
             // Token hết hạn
             await removeToken();
+            await removeToken("pushToken");
           } else {
             setToken(storedToken);
             isValid = true;
@@ -64,6 +65,7 @@ export default function LoginScreen() {
         } catch (e) {
           // Token lỗi format
           await removeToken();
+          await removeToken("pushToken");
         }
       }
 

@@ -19,7 +19,7 @@ interface Props {
   nextStep: () => void;
 }
 
-const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFocused, previousStep, nextStep }) => {
+const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFocused, nextStep }) => {
   const baseUserUrl = `${Constants.expoConfig?.extra?.apiUrl}/user/firebase`;
   const [errorOTP, setErrorOTP] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");

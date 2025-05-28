@@ -1,6 +1,6 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import { useRouter } from 'expo-router';
+import { removeToken } from '@/helpers/secureStore';
 
 interface AuthContextType {
   token: string | null;
@@ -33,7 +33,9 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     setToken(null);
     setUserId(undefined);
-    await AsyncStorage.removeItem("token");
+    await removeToken();
+    await removeToken("accessToken");
+    await removeToken("pushToken");
     router.replace("/auth");
   }
 
