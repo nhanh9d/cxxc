@@ -14,12 +14,6 @@ interface Props {
 }
 
 const PhoneInput: React.FC<Props> = ({ phoneNumber, setPhoneNumber, setInputFocused, setConfirm, nextStep }) => {
-  // useEffect(() => {
-  //   if (__DEV__) {
-  //     auth().settings.appVerificationDisabledForTesting = true;
-  //   }
-  // }, []);
-
   const sendVerification = async () => {
     try {
       const correctedPhoneNumber = phoneNumber.startsWith("0") ? "+84" + phoneNumber.substring(1) : phoneNumber;

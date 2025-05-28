@@ -1,10 +1,10 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { StyleSheet, TouchableOpacity } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { ThemedView } from "@/components/layout/ThemedView";
 import { useEffect, useState } from "react";
 import { MaterialIcons } from "@expo/vector-icons";
-import { EventCard } from "@/components/EventCard";
+import { EventCard } from "@/components/cards/EventCard";
 import { EventDto } from "@/types/event";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";

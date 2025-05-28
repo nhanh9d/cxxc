@@ -10,12 +10,14 @@ import { ThemedScrollView } from "@/components/layout/ThemedScrollView";
 import React from "react";
 import { useApi } from "@/contexts/ApiContext";
 import { useAuth } from "@/contexts/AuthContext";
+import { useConfig } from "@/contexts/ConfigContext";
 
 export default function DetailScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const axios = useApi();
   const { userId } = useAuth();
+  const config = useConfig();
 
   useEffect(() => {
     navigation.setOptions({
@@ -104,7 +106,7 @@ export default function DetailScreen() {
 
   return (
     <ThemedScrollView lightColor="#FFFCEE" style={styles.container}>
-      <Image source={event?.banner ? { uri: `${Constants.expoConfig?.extra?.fileUrl}/${event.banner}` } : require("../../assets/images/banner-placeholder.png")}
+      <Image source={event?.banner ? { uri: `${config?.fileUrl}/${event.banner}` } : require("../../assets/images/banner-placeholder.png")}
         style={{ width: "100%", height: 150, resizeMode: "cover", borderRadius: 12, marginBottom: 24 }} />
 
       <View style={{ marginBottom: 24 }}>
@@ -156,7 +158,7 @@ export default function DetailScreen() {
 
       <ThemedText style={styles.subtitle}>Tổ chức bởi</ThemedText>
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-        <Image source={event?.creator ? { uri: `${Constants.expoConfig?.extra?.fileUrl}/${event?.creator.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")} style={{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }} />
+        <Image source={event?.creator ? { uri: `${config?.fileUrl}/${event?.creator.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")} style={{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }} />
         <ThemedText type="defaultSemiBold">{event?.creator?.fullname}</ThemedText>
       </View>
 
@@ -167,7 +169,7 @@ export default function DetailScreen() {
           (
             <Image
               key={index}
-              source={member.user.profileImages[0] ? { uri: `${Constants.expoConfig?.extra?.fileUrl}/${member.user.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")}
+              source={member.user.profileImages[0] ? { uri: `${config?.fileUrl}/${member.user.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")}
               style={[{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }, index > 1 ? { position: "absolute", left: 16 * index } : {}]} />)
           )}
           <ThemedText type="defaultSemiBold" style={{ marginTop: 8 }}>

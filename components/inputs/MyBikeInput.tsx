@@ -61,7 +61,7 @@ const MyBikeInput: React.FC<Props> = ({ userId, firebaseUserId, bikeInfomation, 
 
       <ThemedView style={styles.halfWidth} lightColor="#FFFCEE" darkColor="#2B2A27">
         <ThemedImageUpload
-          placeholderImage={require("../assets/images/upload-image-placeholder.png")}
+          placeholderImage={require("../../assets/images/upload-image-placeholder.png")}
           numberOfImages={3}
           imagesPerRow={3}
           onUpload={handleBikeImagesUpload}

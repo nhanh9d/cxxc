@@ -1,23 +1,24 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
 import { Image, StyleSheet, TouchableOpacity } from "react-native";
-import { ThemedText } from "@/components/ThemedText";
-import { ThemedView } from "@/components/ThemedView";
-import { ThemedButton } from "@/components/ThemedButton";
+import { ThemedText } from "@/components/ui/ThemedText";
+import { ThemedView } from "@/components/layout/ThemedView";
+import { ThemedButton } from "@/components/ui/ThemedButton";
 import { useImageUpload } from "@/contexts/UploadImageContext";
-import { ThemedInput } from "@/components/ThemedInput";
-import { DateRangePicker } from "@/components/DateRangePicker";
+import { ThemedInput } from "@/components/inputs/ThemedInput";
+import { DateRangePicker } from "@/components/inputs/DateRangePicker";
 import { useEffect, useState } from "react";
 import { EventDto } from "@/types/event";
-import SelectableInput from "@/components/SelectableInput";
+import SelectableInput from "@/components/inputs/SelectableInput";
 import { MaterialIcons } from "@expo/vector-icons";
-import { ThemedScrollView } from "@/components/ThemedScrollView";
+import { ThemedScrollView } from "@/components/layout/ThemedScrollView";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "@/contexts/ApiContext";
-
+import { useConfig } from "@/contexts/ConfigContext";
 export default function CreateScreen() {
   const router = useRouter();
   const axios = useApi();
+  const config = useConfig();
 
   const navigation = useNavigation();
   useEffect(() => {
@@ -137,7 +138,7 @@ export default function CreateScreen() {
           <Image
             source={
               event?.banner
-                ? { uri: `${Constants.expoConfig?.extra?.fileUrl}/${event.banner}` }
+                ? { uri: `${config?.fileUrl}/${event.banner}` }
                 : require("../../assets/images/banner-placeholder.png")}
             style={{ width: "100%", height: 200, resizeMode: "cover", borderRadius: 12 }} />
           <ThemedButton

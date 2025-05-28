@@ -7,6 +7,8 @@ import { ThemedText } from "@/components/ui/ThemedText";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import Constants from "expo-constants";
 import axios from "axios";
+const referenceImage1 = require("../../assets/images/verify-placeholder.png");
+const referenceImage2 = require("../../assets/images/verify-placeholder.png");
 
 interface Props {
   verificationImages: (string | undefined)[];
@@ -16,8 +18,6 @@ interface Props {
 }
 
 const KnowYourCustomer: React.FC<Props> = ({ verificationImages, setVerificationImages, userId, nextStep }) => {
-  const referenceImage1 = require("../assets/images/verify-placeholder.png");
-  const referenceImage2 = require("../assets/images/verify-placeholder.png");
   const baseUserUrl = `${Constants.expoConfig?.extra?.apiUrl}/user/firebase`;
 
   const [isCameraVisible, setCameraVisible] = useState(false);

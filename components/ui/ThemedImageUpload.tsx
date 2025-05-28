@@ -11,6 +11,7 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
+import { useConfig } from "@/contexts/ConfigContext";
 
 export type ThemedImageUploadProps = {
   placeholderImage: any; // Placeholder image source
@@ -33,11 +34,14 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
     Array(numberOfImages).fill(null)
   ); // State for uploaded images
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
+  const config = useConfig();
 
-  const baseFileUrl = `${Constants.expoConfig?.extra?.fileUrl}/user/${userId ?? DEFAULT_BUCKET}`;
+  const baseFileUrl = `${config?.fileUrl}/user/${userId ?? DEFAULT_BUCKET}`;
 
   const getUploadUrl = async (fileName: string, userId?: string) => {
-    const result = await axios.get(`${Constants.expoConfig?.extra?.apiUrl}/file/get-upload-url/${userId ?? DEFAULT_BUCKET}/${fileName}`);
+    const url = `${Constants.expoConfig?.extra?.apiUrl}/file/get-upload-url/${userId ?? DEFAULT_BUCKET}/${fileName}`;
+    console.log("🚀 ~ getUploadUrl ~ url:", url)
+    const result = await axios.get(url);
 
     return result.data;
   }
@@ -65,6 +69,7 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
       const image = result.assets[0];
       const fileName = `${image.uri.split("/").pop()}`;
       const uploadUrl = await getUploadUrl(fileName, userId);
+      console.log("🚀 ~ handleImageSelect ~ uploadUrl:", uploadUrl)
       const fileData = await FileSystem.readAsStringAsync(image.uri, {
         encoding: FileSystem.EncodingType.Base64,
       });

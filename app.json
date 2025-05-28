@@ -100,17 +100,7 @@
       "typedRoutes": true
     },
     "extra": {
-      "apiUrl": "https://96ca-2401-d800-91c1-d3f1-c449-6648-7c0a-aee2.ngrok-free.app",
-      "fileUrl": "https://288b-2401-d800-91c1-d3f1-c449-6648-7c0a-aee2.ngrok-free.app",
-      "fileUser": "cxxc",
-      "filePassword": "cxxc@123",
-      "minio": {
-        "accessKey": "IxuuYWSIdf8XFpw6WvAD",
-        "secretKey": "jD4Z79wGwD1Va5DO4sO487LzUyl12vhwYQwWxthN",
-        "useSSL": true,
-        "endPoint": "https://288b-2401-d800-91c1-d3f1-c449-6648-7c0a-aee2.ngrok-free.app",
-        "port": 443
-      },
+      "apiUrl": "https://api.cxxc.vn",
       "router": {
         "origin": false
       },

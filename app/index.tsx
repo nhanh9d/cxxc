@@ -3,11 +3,11 @@ import { StyleSheet, Image } from "react-native";
 import { useNavigation, useRouter } from "expo-router";
 import { ThemedView } from "@/components/layout/ThemedView";
 import * as Notifications from 'expo-notifications';
-import { getToken, saveToken } from "@/helpers/secureStore";
+import { getToken, saveToken, removeToken } from "@/helpers/secureStore";
 import { useAuth } from "@/contexts/AuthContext";
 import { useApi } from "@/contexts/ApiContext";
 import Constants from "expo-constants";
-import { ThemedText } from "@/components/ui/ThemedText";
+import { jwtDecode } from "jwt-decode";
 
 export default function LoginScreen() {
   const router = useRouter();
@@ -49,10 +49,26 @@ export default function LoginScreen() {
   useEffect(() => {
     const loadToken = async () => {
       const storedToken = await getToken();
-      if (storedToken) setToken(storedToken);
+      let isValid = false;
+
+      if (storedToken) {
+        try {
+          const decoded: any = jwtDecode(storedToken);
+          if (!decoded.exp || decoded.exp * 1000 < Date.now()) {
+            // Token hết hạn
+            await removeToken();
+          } else {
+            setToken(storedToken);
+            isValid = true;
+          }
+        } catch (e) {
+          // Token lỗi format
+          await removeToken();
+        }
+      }
 
       setTimeout(() => {
-        router.replace(storedToken ? "/(tabs)" : "/auth");
+        router.replace(isValid ? "/(tabs)" : "/auth");
       }, 1500);
     };
 

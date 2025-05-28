@@ -24,7 +24,8 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
   const [errorOTP, setErrorOTP] = useState(false);
   const [verificationCode, setVerificationCode] = useState("");
   const router = useRouter();
-  const { setToken } = useAuth();
+  const { setToken, token } = useAuth();
+  const [pendingLogin, setPendingLogin] = useState(false);
 
   const handleSignIn = async (user: FirebaseAuthTypes.User) => {
     setFirebaseUserId(user.uid);
@@ -34,8 +35,7 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
     if (response.data) {
       await saveToken("accessToken", response.data.accessToken);
       setToken(response.data.accessToken);
-
-      router.push("/(tabs)");
+      setPendingLogin(true);
     } else {
       nextStep();
     }
@@ -49,6 +49,12 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
     });
     return subscriber; // unsubscribe on unmount
   }, []);
+
+  useEffect(() => {
+    if (pendingLogin && token) {
+      router.push("/(tabs)");
+    }
+  }, [pendingLogin, token]);
 
   const confirmCode = async () => {
     try {

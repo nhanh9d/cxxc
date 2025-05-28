@@ -1,6 +1,6 @@
 import { Tabs, useNavigation, useRouter, useSegments } from 'expo-router';
-import React, { useEffect } from 'react';
-import { Platform, TouchableOpacity, View } from 'react-native';
+import React, { useEffect, useState } from 'react';
+import { Platform, TouchableOpacity, View, Alert, StyleProp, ViewStyle } from 'react-native';
 
 import { HapticTab } from '@/components/navigation/HapticTab';
 import { IconSymbol } from '@/components/ui/IconSymbol';
@@ -9,17 +9,46 @@ import { ThemedText } from '@/components/ui/ThemedText';
 import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
+import HeaderIconBtn from '@/components/ui/HeaderIconBtn';
 
 export default function TabLayout() {
   const colorScheme = useColorScheme();
   const router = useRouter();
-
   const segments = useSegments();
   const navigation = useNavigation();
+  const [headerIconProps, setHeaderIconProps] = useState({
+    iconName: "notifications-none",
+    color: "black",
+    onPress: () => router.push("/notifications"),
+    style: { marginRight: 4, borderRadius: 100, backgroundColor: "#FFF", borderWidth: 1, borderColor: "#EEEEEF", padding: 2 }
+  });
+
+  useEffect(() => {
+    const currentScreen = segments[segments.length - 1];
+    switch (currentScreen) {
+      case "profile":
+        setHeaderIconProps({
+          iconName: "settings",
+          color: "#999",
+          onPress: () => router.push("/settings"),
+          style: { marginRight: 12, borderRadius: 100, backgroundColor: "#FFF", borderWidth: 1, borderColor: "#EEEEEF", padding: 2 }
+        });
+        break;
+      case "friend":
+      case "chat":
+      default:
+        setHeaderIconProps({
+          iconName: "notifications-none",
+          color: "black",
+          onPress: () => router.push("/notifications"),
+          style: { marginRight: 4, borderRadius: 100, backgroundColor: "#FFF", borderWidth: 1, borderColor: "#EEEEEF", padding: 2 }
+        });
+    }
+  }, [segments, router]);
+
   useEffect(() => {
     const currentScreen = segments[segments.length - 1];
     let title = "Khám phá";
-
     switch (currentScreen) {
       case "friend":
         title = "Kết bạn";
@@ -33,17 +62,10 @@ export default function TabLayout() {
       default:
         title = "Khám phá";
     }
-
     navigation.setOptions({
       headerLeft: () => (
         <ThemedText type="title" style={{ paddingLeft: 4 }}>{title}</ThemedText>),
-      headerRight: () => (
-        <TouchableOpacity
-          onPress={() => router.push("/notifications")}
-          style={{ marginRight: 4, borderRadius: 100, backgroundColor: "#FFF", borderWidth: 1, borderColor: "#EEEEEF", padding: 2 }}>
-          <MaterialIcons name="notifications-none" size={24} color="black" />
-        </TouchableOpacity>
-      ),
+      headerRight: () => <HeaderIconBtn {...headerIconProps} />,
       headerTitle: "",
       headerStyle: {
         backgroundColor: "#FFFCEE",
@@ -52,7 +74,7 @@ export default function TabLayout() {
         borderBottomWidth: 0,
       }
     });
-  }, [navigation, segments]);
+  }, [navigation, segments, headerIconProps]);
 
   return (
     <Tabs

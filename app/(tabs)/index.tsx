@@ -1,7 +1,7 @@
 import Constants from "expo-constants";
 import React, { useCallback, useEffect, useState } from "react";
 import { ThemedView } from "@/components/layout/ThemedView";
-import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View } from "react-native";
+import { ActivityIndicator, FlatList, RefreshControl, StyleSheet, TouchableOpacity, View, Alert } from "react-native";
 import FloatingButton from "@/components/layout/FloatingButton";
 import { useRouter } from "expo-router";
 import { EventDto } from "@/types/event";
@@ -18,18 +18,17 @@ export default function IndexScreen() {
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
   const [myRidesCount, setMyRidesCount] = useState(0);
-  const axios = useApi();
   const router = useRouter();
+  const api = useApi();
 
   const fetchData = async () => {
-    console.log("🚀 ~ fetchData ~ `${baseEventUrl}?page=${page}&limit=4`:", `${baseEventUrl}?page=${page}&limit=4`)
-    const response = await axios.get<EventDto[]>(`${baseEventUrl}?page=${page}&limit=4`);
+    const response = await api.get<EventDto[]>(`${baseEventUrl}?page=${page}&limit=4`);
     return response.data;
   }
 
   const fetchMyRidesCount = async () => {
     try {
-      const response = await axios.get<{ count: number }>(`${baseEventUrl}?page=${page}&limit=&mine=true&count=true`);
+      const response = await api.get<{ count: number }>(`${baseEventUrl}?page=${page}&limit=&mine=true&count=true`);
       setMyRidesCount(response.data.count);
     } catch (error) {
       console.log("🚀 ~ fetchMyRidesCount ~ error:", error);
@@ -58,11 +57,12 @@ export default function IndexScreen() {
 
       if (data.length !== 0) {
         setPage((prevPage) => prevPage + 1);
-        setEvents([...events, ...data]);
+        setEvents(prevEvents => [...prevEvents, ...data]);
       }
     } catch (error) {
-      console.log("🚀 ~ loadMoreEvents ~ error:", error)
-
+      console.log("🚀 ~ loadMoreEvents ~ error:", error);
+      setNoMoreData(true); // Nếu lỗi, chặn gọi tiếp
+      Alert.alert("Lỗi hệ thống", "Lỗi hệ thống, vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }

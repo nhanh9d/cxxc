@@ -6,6 +6,7 @@ import { DarkTheme, DefaultTheme, ThemeContext } from '@react-navigation/native'
 import { AuthProvider } from '@/contexts/AuthContext';
 import { ApiProvider } from '@/contexts/ApiContext';
 import { ImageUploadProvider } from '@/contexts/UploadImageContext';
+import { ConfigProvider } from '@/contexts/ConfigContext';
 
 export const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const colorScheme = useColorScheme();
@@ -15,6 +16,7 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
     [ThemeContext.Provider, { value: theme }],
     [AuthProvider],
     [ApiProvider],
+    [ConfigProvider],
     [ImageUploadProvider],
   ];
 
