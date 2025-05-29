@@ -5,6 +5,9 @@ import * as ImagePicker from "expo-image-picker";
 import * as FileSystem from 'expo-file-system';
 import { useAuth } from './AuthContext';
 import { Buffer } from 'buffer';
+import { Image as ImageCompressor } from 'react-native-compressor';
+import { useLoading } from './LoadingContext';
+
 type uploadImageParams = {
   aspect: [number, number]
 }
@@ -19,6 +22,7 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const DEFAULT_BUCKET = "general";
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
   const { userId } = useAuth();
+  const { showLoading, hideLoading } = useLoading();
 
   const getUploadUrl = async (fileName: string, userId?: string) => {
     const result = await axios.get(`${Constants.expoConfig?.extra?.apiUrl}/file/get-upload-url/${userId ?? DEFAULT_BUCKET}/${fileName}`);
@@ -47,24 +51,36 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
     }
 
     const image = result.assets[0];
-    const fileName = `${image.uri.split("/").pop()}`;
+
+    // Compress image trước khi upload
+    const compressedImageUri = await ImageCompressor.compress(image.uri, {
+      quality: 0.6,
+      maxWidth: 720,
+    });
+
+    const fileName = `${compressedImageUri.split("/").pop()}`;
     const uploadUrl = await getUploadUrl(fileName, `${userId}`);
-    const fileData = await FileSystem.readAsStringAsync(image.uri, {
+    const fileData = await FileSystem.readAsStringAsync(compressedImageUri, {
       encoding: FileSystem.EncodingType.Base64,
     });
 
     const buffer = Buffer.from(fileData, 'base64');
 
-    const response = await axios.put(
-      uploadUrl, // MinIO endpoint
-      buffer,
-      {
-        headers: {
-          "Content-Type": "image/png",
-          "Content-Length": buffer.length
-        },
-      }
-    );
+    try {
+      showLoading();
+      await axios.put(
+        uploadUrl, // MinIO endpoint
+        buffer,
+        {
+          headers: {
+            "Content-Type": "image/png",
+            "Content-Length": buffer.length
+          },
+        }
+      );
+    } finally {
+      hideLoading();
+    }
 
     return `user/${userId ?? DEFAULT_BUCKET}/${fileName}`;
   }
