@@ -9,6 +9,7 @@ import ThemedDropdown from "@/components/ui/ThemedDropdown";
 import { ThemedImageUpload } from "@/components/ui/ThemedImageUpload";
 import { BikeInfo } from "@/types/bikeInfo";
 import { ThemedInput } from "@/components/inputs/ThemedInput";
+import { useLoading } from "@/contexts/LoadingContext";
 
 interface Props {
   userId: number | undefined;
@@ -21,12 +22,15 @@ interface Props {
 
 const MyBikeInput: React.FC<Props> = ({ userId, firebaseUserId, bikeInfomation, setBikeInformation, setInputFocused, nextStep }) => {
   const baseVehicleUrl = `${Constants.expoConfig?.extra?.apiUrl}/vehicle`;
+  const { showLoading, hideLoading } = useLoading();
+
   const handleBikeImagesUpload = (images: (string | undefined)[]) => {
     setBikeInformation({ ...bikeInfomation, images });
   };
 
   const saveBike = async () => {
     try {
+      showLoading();
       const url = `${baseVehicleUrl}/create`;
       const response = await axios.post(url, {
         ...bikeInfomation,
@@ -38,6 +42,8 @@ const MyBikeInput: React.FC<Props> = ({ userId, firebaseUserId, bikeInfomation, 
       }
     } catch (error) {
       console.error("Error create user: ", error);
+    } finally {
+      hideLoading();
     }
   };
 

@@ -11,13 +11,16 @@ import * as ImagePicker from "expo-image-picker";
 import axios from "axios";
 import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
+import { Image as ImageCompressor } from 'react-native-compressor';
 import { useConfig } from "@/contexts/ConfigContext";
+import { useLoading } from "@/contexts/LoadingContext";
 
 export type ThemedImageUploadProps = {
   placeholderImage: any; // Placeholder image source
   numberOfImages: number; // Total number of placeholders
   imagesPerRow: number; // Number of images per row
   userId?: string;
+  uploadedImages?: (string | undefined)[];
   onUpload?: (images: (string | undefined)[]) => void; // Callback with uploaded images
 };
 
@@ -28,22 +31,33 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
   numberOfImages,
   imagesPerRow,
   userId,
+  uploadedImages,
   onUpload,
 }) => {
   const [images, setImages] = useState<(string | undefined)[]>(
-    Array(numberOfImages).fill(null)
+    uploadedImages || Array(numberOfImages).fill(null)
   ); // State for uploaded images
+
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
   const config = useConfig();
+  const { showLoading, hideLoading } = useLoading();
 
   const baseFileUrl = `${config?.fileUrl}/user/${userId ?? DEFAULT_BUCKET}`;
 
   const getUploadUrl = async (fileName: string, userId?: string) => {
     const url = `${Constants.expoConfig?.extra?.apiUrl}/file/get-upload-url/${userId ?? DEFAULT_BUCKET}/${fileName}`;
-    console.log("🚀 ~ getUploadUrl ~ url:", url)
     const result = await axios.get(url);
 
     return result.data;
+  }
+
+  const compressImage = async (image: ImagePicker.ImagePickerAsset) => {
+    const compressedImageUri = await ImageCompressor.compress(image.uri, {
+      quality: 0.6,
+      maxWidth: 720,
+    });
+
+    return compressedImageUri;
   }
 
   const handleImageSelect = async (index: number) => {
@@ -66,11 +80,12 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
         return; // User canceled the picker
       }
 
+      showLoading();
       const image = result.assets[0];
-      const fileName = `${image.uri.split("/").pop()}`;
+      const compressedImageUri = await compressImage(image);
+      const fileName = `${compressedImageUri.split("/").pop()}`;
       const uploadUrl = await getUploadUrl(fileName, userId);
-      console.log("🚀 ~ handleImageSelect ~ uploadUrl:", uploadUrl)
-      const fileData = await FileSystem.readAsStringAsync(image.uri, {
+      const fileData = await FileSystem.readAsStringAsync(compressedImageUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
       const binaryData = atob(fileData);
@@ -100,6 +115,8 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
     } catch (error) {
       console.log("🚀 ~ handleImageSelect ~ error:", error);
       Alert.alert("Error", "An error occurred while selecting an image.");
+    } finally {
+      hideLoading();
     }
   };
 
@@ -116,11 +133,20 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
               { width: `${100 / imagesPerRow - 5}%` }, // Dynamic width
             ]}
           >
-            <Image
-              source={image ? { uri: image } : placeholderImage}
-              style={[styles.image, image ? styles.selectedImage : {}]}
-            />
-            {image ? null : <ThemedText>Chọn ảnh</ThemedText>}
+            {image ? (
+              <Image
+                source={{ uri: image }}
+                style={[styles.image, styles.selectedImage]}
+              />
+            ) : (
+              <>
+                <Image
+                  source={placeholderImage}
+                  style={[styles.image, image ? styles.selectedImage : {}]}
+                />
+                <ThemedText>Chọn ảnh</ThemedText>
+              </>
+            )}
           </TouchableOpacity>
         ))}
       </ThemedView>

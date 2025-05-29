@@ -1,13 +1,15 @@
 import React from "react";
 import { ThemedView } from "@/components/layout/ThemedView";
-import { ThemedButton } from "@/components/ui/ThemedButton";
+import { ButtonType, ThemedButton } from "@/components/ui/ThemedButton";
 import ThemedDropdown from "@/components/ui/ThemedDropdown";
 import ThemedDatePicker from "@/components/ui/ThemedDatePicker";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import Constants from "expo-constants";
 import { StyleSheet } from "react-native";
 import { ThemedInput } from "../inputs/ThemedInput";
 import { useAuth } from "@/contexts/AuthContext";
+import { useLoading } from "@/contexts/LoadingContext";
+
 interface Props {
   personalInformation: any;
   phoneNumber: string;
@@ -32,24 +34,40 @@ type UserResponseDto = UserDto & {
 }
 
 const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, firebaseUserId, setPersonalInformation, setInputFocused, nextStep }) => {
-  const { setToken } = useAuth();
+  const { setToken, token } = useAuth();
+  const { showLoading, hideLoading } = useLoading();
   const baseUserUrl = `${Constants.expoConfig?.extra?.apiUrl}/user/firebase`;
 
-  const createUser = async () => {
+  const createOrUpdateUser = async () => {
     try {
-      const url = `${baseUserUrl}`;
-      const response = await axios.post<UserResponseDto>(url, {
-        ...personalInformation,
-        phone: phoneNumber, firebaseId: firebaseUserId, isActive: true
-      });
+      showLoading();
+      let response: AxiosResponse<UserResponseDto, any>;
 
-      if (response.data) {
+      if (token) {
+        // Nếu đã có token, update user
+        const url = `${baseUserUrl}/${firebaseUserId}`;
+        response = await axios.put<UserResponseDto>(url, {
+          ...personalInformation,
+          phone: phoneNumber, firebaseId: firebaseUserId, isActive: true
+        });
+      } else {
+        // Nếu chưa có token, tạo user mới
+        const url = `${baseUserUrl}`;
+        response = await axios.post<UserResponseDto>(url, {
+          ...personalInformation,
+          phone: phoneNumber, firebaseId: firebaseUserId, isActive: true
+        });
+      }
+
+      if (response?.data) {
         setPersonalInformation({ ...personalInformation, userId: response.data.id });
         setToken(response.data.accessToken);
         nextStep();
       }
     } catch (error) {
-      console.error("Error create user: ", error);
+      console.error("Error create/update user: ", error);
+    } finally {
+      hideLoading();
     }
   };
 
@@ -61,6 +79,7 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
           placeholder="Tên đầy đủ"
           keyboardType="default"
           style={styles.input}
+          value={personalInformation.fullname}
           onFocus={() => setInputFocused(true)} // Set focus state
           onBlur={() => setInputFocused(false)} // Clear focus state
         />
@@ -77,10 +96,12 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
               paddingHorizontal: 10,
               height: 50,
             }}
-            style={styles.halfWidth}
+            value={personalInformation.birthday}
+            style={[styles.halfWidth, { backgroundColor: "#FFF" }]}
             maxDate={new Date()}
             onValueChange={(value) => setPersonalInformation({ ...personalInformation, birthday: value })} />
           <ThemedDropdown
+            value={personalInformation.gender}
             onValueChange={(value) => setPersonalInformation({ ...personalInformation, gender: value })}
           />
         </ThemedView>
@@ -88,7 +109,10 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
 
       <ThemedButton
         title="Tiếp tục"
-        onPress={createUser}
+        onPress={createOrUpdateUser}
+        buttonType={(personalInformation.gender
+          && personalInformation.birthday
+          && personalInformation.fullname) ? ButtonType.primary : undefined}
         style={[styles.button, personalInformation.gender
           && personalInformation.birthday
           && personalInformation.fullname ? {} : styles.disabledButton]}

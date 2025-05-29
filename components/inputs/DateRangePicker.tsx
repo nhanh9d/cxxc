@@ -38,7 +38,7 @@ export function DateRangePicker({
               fontSize: 16,
               marginBottom: 0
             }}
-            defaultValue={defaultStartDate}
+            value={defaultStartDate}
             minDate={minStartDate}
             maxDate={maxStartDate}
             showLabel={true}
@@ -61,7 +61,7 @@ export function DateRangePicker({
               fontSize: 16,
               marginBottom: 0
             }}
-            defaultValue={defaultEndDate}
+            value={defaultEndDate}
             minDate={minEndDate}
             maxDate={maxEndDate}
             showLabel={true}

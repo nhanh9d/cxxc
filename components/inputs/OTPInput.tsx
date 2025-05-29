@@ -15,7 +15,6 @@ interface Props {
   confirmation: FirebaseAuthTypes.ConfirmationResult | undefined;
   setFirebaseUserId: (value: string) => void;
   setInputFocused: (value: boolean) => void;
-  previousStep: () => void;
   nextStep: () => void;
 }
 

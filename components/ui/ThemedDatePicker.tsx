@@ -14,7 +14,7 @@ export type ThemedDatePickerProps = ViewProps & {
   buttonStyle?: StyleProp<ViewStyle>
   minDate?: Date,
   maxDate?: Date,
-  defaultValue?: Date,
+  value?: Date,
   onValueChange?: (value: Date | undefined) => void; // Callback for selection
 };
 
@@ -27,10 +27,10 @@ export default function ThemedDatePicker({
   buttonStyle,
   minDate,
   maxDate,
-  defaultValue,
+  value,
   onValueChange
 }: ThemedDatePickerProps) {
-  const [date, setDate] = useState<Date>(defaultValue || new Date());
+  const [date, setDate] = useState<Date>(value || new Date());
   const [showPicker, setShowPicker] = useState(false);
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {

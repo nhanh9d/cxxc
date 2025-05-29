@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useCallback } from "react";
 import { ThemedView } from "@/components/layout/ThemedView";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { ButtonType, ThemedButton } from "@/components/ui/ThemedButton";
@@ -70,8 +70,6 @@ export default function PhoneScreen() {
   //bike
   const [bikeInfomation, setBikeInformation] = useState<BikeInfo>();
 
-  const router = useRouter();
-
   const handleUpload = (images: (string | undefined)[]) => {
     setImages(images);
   };
@@ -91,26 +89,8 @@ export default function PhoneScreen() {
     }
   }
 
-  const navigation = useNavigation();
-  useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity onPress={() => previousStep()} style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons name="chevron-left" size={24} color="#999" />
-          <ThemedText>Quay lại</ThemedText>
-        </TouchableOpacity>
-      ),
-      headerTitle: "",
-      headerStyle: {
-        backgroundColor: "#FFFCEE",
-        shadowOpacity: 0, // Remove shadow (iOS)
-        elevation: 0, // Remove shadow (Android)
-        borderBottomWidth: 0, // Remove bottom border
-      }
-    });
-  }, [navigation]);
-
-  const previousStep = () => {
+  const router = useRouter();
+  const previousStep = useCallback(() => {
     switch (step) {
       default:
       case accountSteps.fillPhone:
@@ -122,9 +102,9 @@ export default function PhoneScreen() {
         setStep(accountSteps.fillPhone);
         break;
       case accountSteps.fillPersonalInfomation:
-        setTitle("Xác thực");
-        setSubtitle(`Mã xác thực đã được gửi đến: ${phoneNumber} Nhập mã vào ô bên dưới để xác minh tài khoản.`);
-        setStep(accountSteps.fillOTP);
+        setTitle("Nhập số điện thoại");
+        setSubtitle(`Số điện thoại được dùng để xác minh tài khoản và sẽ không hiển thị trên hồ sơ của bạn.`);
+        setStep(accountSteps.fillPhone);
         break;
       case accountSteps.fillImages:
         setTitle("Nhập thông tin cá nhân");
@@ -147,7 +127,26 @@ export default function PhoneScreen() {
         setStep(accountSteps.fillBike);
         break;
     }
-  }
+  }, [step, phoneNumber, personalInformation.userId, router]);
+
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={previousStep} style={{ flexDirection: "row", alignItems: "center" }}>
+          <MaterialIcons name="chevron-left" size={24} color="#999" />
+          <ThemedText>Quay lại</ThemedText>
+        </TouchableOpacity>
+      ),
+      headerTitle: "",
+      headerStyle: {
+        backgroundColor: "#FFFCEE",
+        shadowOpacity: 0, // Remove shadow (iOS)
+        elevation: 0, // Remove shadow (Android)
+        borderBottomWidth: 0, // Remove bottom border
+      }
+    });
+  }, [navigation, previousStep]);
 
   const nextStep = () => {
     switch (step) {
@@ -223,7 +222,6 @@ export default function PhoneScreen() {
               confirmation={confirmation}
               setFirebaseUserId={setFirebaseUserId}
               setInputFocused={setInputFocused}
-              previousStep={previousStep}
               nextStep={nextStep} />
           ) : null}
 
@@ -246,14 +244,15 @@ export default function PhoneScreen() {
                   imagesPerRow={3}
                   onUpload={handleUpload}
                   userId={firebaseUserId}
+                  uploadedImages={images}
                 />
               </ThemedView>
 
               <ThemedButton
                 title="Tiếp tục"
                 onPress={saveUserImages}
-                style={[styles.button, images.filter(x => !!x).length > 2 ? {} : styles.disabledButton]}
-                disabled={images.filter(x => !!x).length < 3} />
+                style={styles.button}
+                buttonType={ButtonType.primary} />
             </>
           ) : null}
 

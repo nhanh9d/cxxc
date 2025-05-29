@@ -8,12 +8,14 @@ import { useNavigation } from "@react-navigation/native";
 import { TouchableOpacity, Image, View, StyleSheet, ActivityIndicator, Alert } from "react-native";
 import { MaterialIcons } from "@expo/vector-icons";
 import { useConfig } from "@/contexts/ConfigContext";
+import { useLoading } from "@/contexts/LoadingContext";
 
 export default function ProfileScreen() {
   const axios = useApi();
   const router = useRouter();
   const navigation = useNavigation();
   const config = useConfig();
+  const { showLoading, hideLoading } = useLoading();
 
   useEffect(() => {
     navigation.setOptions({
@@ -34,21 +36,17 @@ export default function ProfileScreen() {
   }, [navigation]);
 
   const [user, setUser] = useState<UserDto | null>(null);
-  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const fetchUser = async () => {
+      showLoading();
       const response = await axios.get<UserDto>(`${Constants.expoConfig?.extra?.apiUrl}/user/me`);
       setUser(response.data);
-      setLoading(false);
+      hideLoading();
     }
 
     fetchUser();
   }, []);
-
-  if (loading) {
-    return <ActivityIndicator style={{ marginTop: 40 }} />;
-  }
 
   if (!user) {
     return <ThemedText>Không tìm thấy thông tin người dùng.</ThemedText>;

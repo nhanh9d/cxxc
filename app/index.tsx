@@ -30,7 +30,7 @@ export default function LoginScreen() {
       if (!enabled) {
         return;
       }
-      
+
       const token = await messaging().getToken();
       const storedPushToken = await getToken("pushToken");
       try {
@@ -71,7 +71,9 @@ export default function LoginScreen() {
       }
 
       setTimeout(() => {
-        router.replace(isValid ? "/(tabs)" : "/auth");
+        if (isValid) {
+          router.replace("/(tabs)");
+        }
       }, 1500);
     };
 

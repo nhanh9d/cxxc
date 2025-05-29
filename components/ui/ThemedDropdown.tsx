@@ -5,15 +5,17 @@ import { Picker } from "@react-native-picker/picker";
 export type ThemedDropdownProps = {
   options?: string[]; // Optional custom item options
   placeholder?: string;
+  value?: string;
   onValueChange?: (value: string) => void; // Callback for selection
 };
 
 export default function ThemedDropdown({
   options = ["Nam", "Nữ", "Khác"], // Default options
   placeholder = "Chọn giới tính",
-  onValueChange
+  onValueChange,
+  value
 }: ThemedDropdownProps) {
-  const [selectedItem, setSelectedItem] = useState<string>(""); // Selected value
+  const [selectedItem, setSelectedItem] = useState<string>(value || ""); // Selected value
   const [modalVisible, setModalVisible] = useState(false);
 
   const handleItemSelect = (item: string) => {
