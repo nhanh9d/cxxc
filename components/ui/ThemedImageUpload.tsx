@@ -4,6 +4,7 @@ import {
   Image,
   TouchableOpacity,
   Alert,
+  Text,
 } from "react-native";
 import { ThemedView } from "@/components/layout/ThemedView";
 import { ThemedText } from "@/components/ui/ThemedText";
@@ -34,8 +35,11 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
   uploadedImages,
   onUpload,
 }) => {
+  console.log("🚀 ~ uploadedImages:", uploadedImages)
+  const x = Array(numberOfImages).map((_, index) => uploadedImages?.[index] || null)
+  console.log("🚀 ~ x:", x)
   const [images, setImages] = useState<(string | undefined)[]>(
-    uploadedImages || Array(numberOfImages).fill(null)
+    Array(numberOfImages).fill(null).map((_, index) => uploadedImages?.[index] || undefined)
   ); // State for uploaded images
 
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
