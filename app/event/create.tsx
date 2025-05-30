@@ -14,17 +14,16 @@ import { ThemedScrollView } from "@/components/layout/ThemedScrollView";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "@/contexts/ApiContext";
-import { useConfig } from "@/contexts/ConfigContext";
+
 export default function CreateScreen() {
   const router = useRouter();
   const axios = useApi();
-  const config = useConfig();
 
   const navigation = useNavigation();
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => router.replace("/(tabs)")} style={{ flexDirection: "row", alignItems: "center" }}>
+        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace("/(tabs)")} style={{ flexDirection: "row", alignItems: "center" }}>
           <MaterialIcons name="chevron-left" size={24} color="#999" />
           <ThemedText>Quay lại</ThemedText>
         </TouchableOpacity>

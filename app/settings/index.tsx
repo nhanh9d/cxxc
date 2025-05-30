@@ -12,7 +12,7 @@ export default function SettingsScreen() {
   useLayoutEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
-        <TouchableOpacity onPress={() => navigation.goBack()} style={{ paddingLeft: 8, flexDirection: 'row', alignItems: 'center' }}>
+        <TouchableOpacity onPress={() => router.back()} style={{ paddingLeft: 0, flexDirection: 'row', alignItems: 'center' }}>
           <Ionicons name="chevron-back" size={22} color="#999" />
           <Text style={{ color: '#999', fontSize: 16, marginLeft: 2 }}>Quay lại</Text>
         </TouchableOpacity>

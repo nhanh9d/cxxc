@@ -57,7 +57,7 @@ export default function DetailScreen() {
         setEvent(eventData);
         setInvitedNo(response.data.invitedNo);
         setRejectedNo(response.data.rejectedNo);
-        setMembers(response.data.members);
+        setMembers(response.data.event.members);
       }
     }
 
@@ -106,7 +106,7 @@ export default function DetailScreen() {
 
   return (
     <ThemedScrollView lightColor="#FFFCEE" style={styles.container}>
-      <Image source={event?.banner ? { uri: `${event.banner}` } : require("../../assets/images/banner-placeholder.png")}
+      <Image source={event?.banner ? { uri: event.banner.includes(config?.fileUrl) ? event.banner : `${config?.fileUrl}/${event.banner}` } : require("../../assets/images/banner-placeholder.png")}
         style={{ width: "100%", height: 150, resizeMode: "cover", borderRadius: 12, marginBottom: 24 }} />
 
       <View style={{ marginBottom: 24 }}>
@@ -158,7 +158,7 @@ export default function DetailScreen() {
 
       <ThemedText style={styles.subtitle}>Tổ chức bởi</ThemedText>
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-        <Image source={event?.creator ? { uri: `${config?.fileUrl}/${event?.creator.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")} style={{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }} />
+        <Image source={event?.creator ? { uri: event?.creator.profileImages[0].includes(config?.fileUrl) ? event?.creator.profileImages[0] : `${config?.fileUrl}/${event?.creator.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")} style={{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }} />
         <ThemedText type="defaultSemiBold">{event?.creator?.fullname}</ThemedText>
       </View>
 
@@ -169,7 +169,7 @@ export default function DetailScreen() {
           (
             <Image
               key={index}
-              source={member.user.profileImages[0] ? { uri: `${config?.fileUrl}/${member.user.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")}
+              source={member.user.profileImages[0] ? { uri: member.user.profileImages[0].includes(config?.fileUrl) ? member.user.profileImages[0] : `${config?.fileUrl}/${member.user.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")}
               style={[{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }, index > 1 ? { position: "absolute", left: 16 * index } : {}]} />)
           )}
           <ThemedText type="defaultSemiBold" style={{ marginTop: 8 }}>

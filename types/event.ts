@@ -25,7 +25,6 @@ export type EventMember = {
 
 export type EventStatistic = {
   event: EventDto,
-  members: EventMember[],
   invitedNo: number,
   rejectedNo: number,
 }
