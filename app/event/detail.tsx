@@ -106,7 +106,7 @@ export default function DetailScreen() {
 
   return (
     <ThemedScrollView lightColor="#FFFCEE" style={styles.container}>
-      <Image source={event?.banner ? { uri: `${config?.fileUrl}/${event.banner}` } : require("../../assets/images/banner-placeholder.png")}
+      <Image source={event?.banner ? { uri: `${event.banner}` } : require("../../assets/images/banner-placeholder.png")}
         style={{ width: "100%", height: 150, resizeMode: "cover", borderRadius: 12, marginBottom: 24 }} />
 
       <View style={{ marginBottom: 24 }}>
@@ -215,6 +215,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     paddingHorizontal: 20,
+    paddingTop: 12
   },
   text: {
     fontSize: 24,

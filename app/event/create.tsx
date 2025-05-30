@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { Image, StyleSheet, TouchableOpacity } from "react-native";
+import { Image, Keyboard, StyleSheet, TouchableOpacity, TouchableWithoutFeedback } from "react-native";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { ThemedView } from "@/components/layout/ThemedView";
 import { ThemedButton } from "@/components/ui/ThemedButton";
@@ -126,82 +126,84 @@ export default function CreateScreen() {
   }
 
   return (
-    <ThemedView lightColor="#FFFCEE" style={styles.container}>
-      <ThemedText type="title" style={{ marginBottom: 24, marginTop: 12 }}>{isEdit ? "Chỉnh sửa thông tin" : "Tạo chuyến đi mới"}</ThemedText>
+    <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+      <ThemedView lightColor="#FFFCEE" style={styles.container}>
+        <ThemedText type="title" style={{ marginBottom: 24, marginTop: 12 }}>{isEdit ? "Chỉnh sửa thông tin" : "Tạo chuyến đi mới"}</ThemedText>
 
-      <ThemedScrollView
-        keyboardShouldPersistTaps="handled"
-        lightColor="#FFFCEE" darkColor="#2B2A27"
-      >
-        {/* banner */}
-        <ThemedView lightColor="#FFFCEE" style={styles.banner}>
-          <Image
-            source={
-              event?.banner
-                ? { uri: `${config?.fileUrl}/${event.banner}` }
-                : require("../../assets/images/banner-placeholder.png")}
-            style={{ width: "100%", height: 200, resizeMode: "cover", borderRadius: 12 }} />
-          <ThemedButton
-            imageSource={require("../../assets/images/picture-icon.png")}
-            imageStyle={{ width: 16, height: 16 }}
-            style={styles.bannerButton} title="Chọn hình ảnh"
-            textStyle={styles.bannerButtonText}
-            onPress={() => { chooseImage() }} />
-        </ThemedView>
+        <ThemedScrollView
+          keyboardShouldPersistTaps="handled"
+          lightColor="#FFFCEE" darkColor="#2B2A27"
+        >
+          {/* banner */}
+          <ThemedView lightColor="#FFFCEE" style={styles.banner}>
+            <Image
+              source={
+                event?.banner
+                  ? { uri: `${event.banner}` }
+                  : require("../../assets/images/banner-placeholder.png")}
+              style={{ width: "100%", height: 200, resizeMode: "cover", borderRadius: 12 }} />
+            <ThemedButton
+              imageSource={require("../../assets/images/picture-icon.png")}
+              imageStyle={{ width: 16, height: 16 }}
+              style={styles.bannerButton} title="Chọn hình ảnh"
+              textStyle={styles.bannerButtonText}
+              onPress={() => { chooseImage() }} />
+          </ThemedView>
 
-        {/* name */}
-        <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
-          <ThemedInput
-            style={{ fontSize: 20, paddingHorizontal: 12, paddingVertical: 16 }}
-            placeholder="Tên chuyến đi"
-            value={event?.name}
-            onChangeText={(value) => setEvent({ ...event, name: value })} />
-        </ThemedView>
+          {/* name */}
+          <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
+            <ThemedInput
+              style={{ fontSize: 20, paddingHorizontal: 12, paddingVertical: 16 }}
+              placeholder="Tên chuyến đi"
+              value={event?.name}
+              onChangeText={(value) => setEvent({ ...event, name: value })} />
+          </ThemedView>
 
-        {/* time */}
-        <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
-          <DateRangePicker
-            defaultEndDate={event?.endDate}
-            defaultStartDate={event?.startDate}
-            minStartDate={new Date()}
-            setStartDate={(date) => setEvent({ ...event, startDate: date })}
-            minEndDate={event?.startDate ? event.startDate : getNearestDate()}
-            setEndDate={(date) => setEvent({ ...event, endDate: date })} />
-        </ThemedView>
+          {/* time */}
+          <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
+            <DateRangePicker
+              defaultEndDate={event?.endDate}
+              defaultStartDate={event?.startDate}
+              minStartDate={new Date()}
+              setStartDate={(date) => setEvent({ ...event, startDate: date })}
+              minEndDate={event?.startDate ? event.startDate : getNearestDate()}
+              setEndDate={(date) => setEvent({ ...event, endDate: date })} />
+          </ThemedView>
 
-        <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
-          <SelectableInput
-            icon={<MaterialIcons name="add-location-alt" size={24} color="#999" />}
-            label="Địa điểm khởi hành"
-            value={event?.startLocation}
-            onSave={(value) => setEvent({ ...event, startLocation: value as string })} />
-        </ThemedView>
+          <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
+            <SelectableInput
+              icon={<MaterialIcons name="add-location-alt" size={24} color="#999" />}
+              label="Địa điểm khởi hành"
+              value={event?.startLocation}
+              onSave={(value) => setEvent({ ...event, startLocation: value as string })} />
+          </ThemedView>
 
-        <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
-          <SelectableInput
-            icon={<MaterialIcons name="menu-book" size={24} color="#999" />}
-            label="Mô tả"
-            value={event?.description}
-            multiline={true}
-            onSave={(value) => setEvent({ ...event, description: value as string })} />
-        </ThemedView>
+          <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
+            <SelectableInput
+              icon={<MaterialIcons name="menu-book" size={24} color="#999" />}
+              label="Mô tả"
+              value={event?.description}
+              multiline={true}
+              onSave={(value) => setEvent({ ...event, description: value as string })} />
+          </ThemedView>
 
-        <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
-          <SelectableInput
-            icon={<MaterialIcons name="people-outline" size={24} color="#999" />}
-            label="Số lượng"
-            value={event?.size}
-            numeric={true}
-            onSave={(value) => setEvent({ ...event, size: value as number })} />
-        </ThemedView>
-      </ThemedScrollView>
+          <ThemedView lightColor="#FFFCEE" style={{ marginBottom: 12 }}>
+            <SelectableInput
+              icon={<MaterialIcons name="people-outline" size={24} color="#999" />}
+              label="Số lượng"
+              value={event?.size}
+              numeric={true}
+              onSave={(value) => setEvent({ ...event, size: value as number })} />
+          </ThemedView>
+        </ThemedScrollView>
 
-      <ThemedButton
-        title={isEdit ? "Cập nhật" : "Tạo chuyến đi"}
-        style={{ backgroundColor: isValid ? "#FF9500" : "#EEEEEF", marginBottom: 24 }}
-        textStyle={{ color: isValid ? "#FFF" : "#C4C4C4" }}
-        onPress={() => isEdit ? editEvent() : createEvent()} />
-    </ThemedView>
+        <ThemedButton
+          title={isEdit ? "Cập nhật" : "Tạo chuyến đi"}
+          style={{ backgroundColor: isValid ? "#FF9500" : "#EEEEEF", marginBottom: 24 }}
+          textStyle={{ color: isValid ? "#FFF" : "#C4C4C4" }}
+          onPress={() => isEdit ? editEvent() : createEvent()} />
+      </ThemedView>
+    </TouchableWithoutFeedback>
   );
 }
 

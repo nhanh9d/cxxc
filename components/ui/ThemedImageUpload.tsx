@@ -92,18 +92,15 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
       const fileData = await FileSystem.readAsStringAsync(compressedImageUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
-      const binaryData = atob(fileData);
-      const buffer = new Uint8Array(binaryData.length);
-      for (let i = 0; i < binaryData.length; i++) {
-        buffer[i] = binaryData.charCodeAt(i);
-      }
+      
+      const buffer = Buffer.from(fileData, 'base64');
 
       await axios.put(
         uploadUrl, // MinIO endpoint
         buffer,
         {
           headers: {
-            "Content-Type": "image/png",
+            "Content-Type": "image/jpg",
             "Content-Length": buffer.length
           },
         }

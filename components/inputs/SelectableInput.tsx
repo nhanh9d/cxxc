@@ -11,6 +11,7 @@ import {
 } from "react-native";
 import { AntDesign } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
+import { ButtonType, ThemedButton } from "../ui/ThemedButton";
 
 type SelectableInputProps = {
   icon: React.ReactNode;
@@ -48,29 +49,57 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
 
   if (numeric && Platform.OS === 'ios') {
     return (
-      <View style={styles.container}>
-        <View style={styles.icon}>{icon}</View>
-        <View style={styles.textContainer}>
-          <Text style={[styles.label, value !== undefined && styles.labelWithValue]}>
-            {label}
-          </Text>
-        </View>
-        <View style={styles.pickerContainer}>
-          <Picker
-            selectedValue={inputValue}
-            onValueChange={(itemValue) => {
-              setInputValue(itemValue);
-              onSave(Number(itemValue));
-            }}
-            style={styles.picker}
-          >
-            <Picker.Item label="Không giới hạn" value="" />
-            {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
-              <Picker.Item key={num} label={num.toString()} value={num.toString()} />
-            ))}
-          </Picker>
-        </View>
-      </View>
+      <>
+        <TouchableOpacity style={styles.container} onPress={() => setModalVisible(true)}>
+          <View style={styles.icon}>{icon}</View>
+          <View style={styles.textContainer}>
+            <Text style={[styles.label, value !== undefined && styles.labelWithValue]}>
+              {label}
+            </Text>
+            <Text style={styles.value}>
+              {value ? value : "Không giới hạn"}
+            </Text>
+          </View>
+          <AntDesign name="right" size={18} color="#999" />
+        </TouchableOpacity>
+        <Modal visible={modalVisible} transparent animationType="slide">
+          <View style={{
+            flex: 1,
+            justifyContent: "flex-end",
+            backgroundColor: "rgba(0,0,0,0.3)"
+          }}>
+            <View style={{
+              backgroundColor: "#FFF",
+              borderTopLeftRadius: 16,
+              borderTopRightRadius: 16,
+              padding: 16,
+              paddingBottom: 48,
+              minHeight: 200,
+            }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 8 }}>
+                {label}
+              </Text>
+              <Text style={{ fontSize: 16, color: "#333", textAlign: "center", marginBottom: 8 }}>
+                Đang chọn: {inputValue || "Không giới hạn"}
+              </Text>
+              <Picker
+                selectedValue={inputValue}
+                onValueChange={(itemValue) => {
+                  setInputValue(itemValue);
+                  onSave(Number(itemValue));
+                }}
+                style={styles.picker}
+              >
+                <Picker.Item label="Không giới hạn" value="" />
+                {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
+                  <Picker.Item key={num} label={num.toString()} value={num.toString()} />
+                ))}
+              </Picker>
+              <ThemedButton buttonType={ButtonType.primary} title="Đóng" onPress={() => setModalVisible(false)}/>
+            </View>
+          </View>
+        </Modal>
+      </>
     );
   }
 
@@ -83,7 +112,7 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
             {label}
           </Text>
         </View>
-        <View style={styles.pickerContainer}>
+        <View>
           <Picker
             selectedValue={inputValue}
             onValueChange={(itemValue) => {
@@ -206,13 +235,7 @@ const styles = StyleSheet.create({
     width: "100%",
     marginTop: 15,
   },
-  pickerContainer: {
-    flex: 1,
-    height: 50,
-    justifyContent: 'center',
-  },
   picker: {
-    height: 50,
     width: '100%',
   },
 });

@@ -7,6 +7,7 @@ import { useAuth } from './AuthContext';
 import { Buffer } from 'buffer';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { useLoading } from './LoadingContext';
+import { useConfig } from './ConfigContext';
 
 type uploadImageParams = {
   aspect: [number, number]
@@ -23,6 +24,8 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
   const { userId } = useAuth();
   const { showLoading, hideLoading } = useLoading();
+  const config = useConfig();
+  const baseFileUrl = `${config?.fileUrl}/user/${userId ?? DEFAULT_BUCKET}`;
 
   const getUploadUrl = async (fileName: string, userId?: string) => {
     const result = await axios.get(`${Constants.expoConfig?.extra?.apiUrl}/file/get-upload-url/${userId ?? DEFAULT_BUCKET}/${fileName}`);
@@ -50,6 +53,7 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
       return; // User canceled the picker
     }
 
+    showLoading();
     const image = result.assets[0];
 
     // Compress image trước khi upload
@@ -67,13 +71,12 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
     const buffer = Buffer.from(fileData, 'base64');
 
     try {
-      showLoading();
       await axios.put(
         uploadUrl, // MinIO endpoint
         buffer,
         {
           headers: {
-            "Content-Type": "image/png",
+            "Content-Type": "image/jpg",
             "Content-Length": buffer.length
           },
         }
@@ -82,7 +85,7 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
       hideLoading();
     }
 
-    return `user/${userId ?? DEFAULT_BUCKET}/${fileName}`;
+    return `${baseFileUrl}/${fileName}`;
   }
 
   return (

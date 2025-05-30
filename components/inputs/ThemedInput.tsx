@@ -1,5 +1,5 @@
 import React from "react";
-import { TextInput, StyleSheet, TextInputProps } from "react-native";
+import { TextInput, StyleSheet, TextInputProps, Keyboard } from "react-native";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export type ThemedInputProps = TextInputProps & {
@@ -30,6 +30,7 @@ export function ThemedInput({
         style,
       ]}
       placeholderTextColor={useThemeColor({}, "placeholder")}
+      onBlur={Keyboard.dismiss}
       {...otherProps}
     />
   );
