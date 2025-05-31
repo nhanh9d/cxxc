@@ -22,7 +22,6 @@ export function DateRangePicker({
   defaultStartDate,
   defaultEndDate
 }: DateRangePickerProp) {
-  console.log(defaultStartDate, defaultEndDate);
   return (
     <View style={styles.container}>
       {/* Departure Date */}

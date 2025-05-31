@@ -37,7 +37,6 @@ const KnowYourCustomer: React.FC<Props> = ({ verificationImages, setVerification
         return
       }
 
-      console.log("Captured Image URI: ", photo.uri);
       if (capturedImage1) {
         setCapturedImage2(photo.uri);
       } else {
@@ -53,11 +52,9 @@ const KnowYourCustomer: React.FC<Props> = ({ verificationImages, setVerification
 
   const saveVerificationImages = async () => {
     const url = `${baseUserUrl}/${userId}`;
-    const response = await axios.put(url, {
+    await axios.put(url, {
       ...verificationImages
     });
-
-    console.log(response);
   }
 
   const confirmPicture = async () => {

@@ -15,7 +15,6 @@ export default function LoginScreen() {
     const checkToken = async (
     ) => {
       const token = await Notifications.getDevicePushTokenAsync();
-      console.log("🚀 ~ useEffect ~ token:", token)
     };
 
     checkToken();

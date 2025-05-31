@@ -9,6 +9,7 @@ import { EventCard } from "@/components/cards/EventCard";
 import { useApi } from "@/contexts/ApiContext";
 import { Fontisto, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ui/ThemedText";
+import { useAuth } from "@/contexts/AuthContext";
 
 export default function IndexScreen() {
   const baseEventUrl = `${Constants.expoConfig?.extra?.apiUrl}/event`;
@@ -20,6 +21,7 @@ export default function IndexScreen() {
   const [myRidesCount, setMyRidesCount] = useState(0);
   const router = useRouter();
   const api = useApi();
+  const { token } = useAuth();
 
   const fetchData = async () => {
     const response = await api.get<EventDto[]>(`${baseEventUrl}?page=${page}&limit=4`);
@@ -36,13 +38,12 @@ export default function IndexScreen() {
   }
 
   useEffect(() => {
-    loadMoreEvents();
-    fetchMyRidesCount();
-
-    return () => {
-      setLoading(false);
+    if (token) {
+      console.log("🚀 ~ useEffect ~ token:", token)
+      loadMoreEvents();
+      fetchMyRidesCount();
     }
-  }, []);
+  }, [token]);
 
   // Fetch more trips when scrolling down
   const loadMoreEvents = async () => {

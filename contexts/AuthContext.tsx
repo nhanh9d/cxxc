@@ -23,10 +23,15 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const router = useRouter();
 
   useEffect(() => {
-    if (token) {
-      const json = atob(token.split(".")[1]);
-      const user = JSON.parse(json) as userToken;
-      setUserId(parseInt(user.sub));
+    try {
+      if (token) {
+        const json = atob(token.split(".")[1]);
+        const user = JSON.parse(json) as userToken;
+        setUserId(parseInt(user.sub));
+      }
+    } catch (error) {
+      console.log('Error token: ', token);
+      logout();
     }
   }, [token])
 

@@ -69,12 +69,6 @@ export default function CreateScreen() {
   }, []);
 
   useEffect(() => {
-    console.log(!!event
-      && !!event.banner
-      && !!event.name
-      && !!event.endDate
-      && !!event.startDate
-      && !!event.startLocation, event);
     setIsValid(!!event
       && !!event.banner
       && !!event.name

@@ -4,7 +4,6 @@ import {
   Image,
   TouchableOpacity,
   Alert,
-  Text,
 } from "react-native";
 import { ThemedView } from "@/components/layout/ThemedView";
 import { ThemedText } from "@/components/ui/ThemedText";
@@ -35,9 +34,7 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
   uploadedImages,
   onUpload,
 }) => {
-  console.log("🚀 ~ uploadedImages:", uploadedImages)
   const x = Array(numberOfImages).map((_, index) => uploadedImages?.[index] || null)
-  console.log("🚀 ~ x:", x)
   const [images, setImages] = useState<(string | undefined)[]>(
     Array(numberOfImages).fill(null).map((_, index) => uploadedImages?.[index] || undefined)
   ); // State for uploaded images
@@ -84,7 +81,6 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
         return; // User canceled the picker
       }
 
-      showLoading();
       const image = result.assets[0];
       const compressedImageUri = await compressImage(image);
       const fileName = `${compressedImageUri.split("/").pop()}`;
@@ -92,8 +88,11 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
       const fileData = await FileSystem.readAsStringAsync(compressedImageUri, {
         encoding: FileSystem.EncodingType.Base64,
       });
-      
-      const buffer = Buffer.from(fileData, 'base64');
+      const binaryData = atob(fileData);
+      const buffer = new Uint8Array(binaryData.length);
+      for (let i = 0; i < binaryData.length; i++) {
+        buffer[i] = binaryData.charCodeAt(i);
+      }
 
       await axios.put(
         uploadUrl, // MinIO endpoint
@@ -117,7 +116,6 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
       console.log("🚀 ~ handleImageSelect ~ error:", error);
       Alert.alert("Error", "An error occurred while selecting an image.");
     } finally {
-      hideLoading();
     }
   };
 

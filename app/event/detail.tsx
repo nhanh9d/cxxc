@@ -1,5 +1,5 @@
 import { useLocalSearchParams, useNavigation, useRouter } from "expo-router";
-import { StyleSheet, TouchableOpacity, Image, View, Platform, Alert } from "react-native";
+import { StyleSheet, TouchableOpacity, Image, View, Platform, Alert, ImageSourcePropType } from "react-native";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { useEffect, useState } from "react";
 import { EventDto, EventMember, EventStatistic } from "@/types/event";
@@ -11,6 +11,8 @@ import React from "react";
 import { useApi } from "@/contexts/ApiContext";
 import { useAuth } from "@/contexts/AuthContext";
 import { useConfig } from "@/contexts/ConfigContext";
+import { useLoading } from "@/contexts/LoadingContext";
+import { UserDto } from "@/types/user";
 
 export default function DetailScreen() {
   const router = useRouter();
@@ -18,6 +20,7 @@ export default function DetailScreen() {
   const axios = useApi();
   const { userId } = useAuth();
   const config = useConfig();
+  const { showLoading, hideLoading } = useLoading();
 
   useEffect(() => {
     navigation.setOptions({
@@ -40,6 +43,7 @@ export default function DetailScreen() {
   const { eventId } = useLocalSearchParams();
 
   //get event information
+  const [joined, setJoined] = useState(false);
   const [event, setEvent] = useState<EventDto>();
   const [invitedNo, setInvitedNo] = useState<number>(0);
   const [rejectedNo, setRejectedNo] = useState<number>(0);
@@ -68,21 +72,37 @@ export default function DetailScreen() {
   const [isCreator, setIsCreator] = useState(false);
   useEffect(() => {
     setIsCreator(event?.creator?.id === userId);
+    setJoined(!!event?.members?.filter(m => m.user.id === userId).length)
   }, [event]);
 
-  const register = async () => {
-    const eventUri = `${Constants.expoConfig?.extra?.apiUrl}/event/${eventId}/register`;
-    const response = await axios.post(eventUri, { id: eventId });
+  const sharedAlert = (content: string, hasButton: boolean = true, hasOption: boolean = true) => Alert.alert(
+    "Thông báo",
+    content,
+    hasButton ? [
+      {
+        text: "Quay về trang chủ",
+        onPress: () => router.replace("/(tabs)")
+      }
+    ] : [],
+    hasOption ? {
+      onDismiss: () => router.replace("/(tabs)")
+    } : undefined
+  );
 
-    if (response?.data) {
-      Alert.alert(
-        "Thông báo",
-        "Đăng ký tham gia sự kiện thành công",
-        [
-          { text: "OK" }
-        ]
-      );
-      router.replace("/(tabs)");
+  const register = async () => {
+    try {
+      showLoading();
+      const eventUri = `${Constants.expoConfig?.extra?.apiUrl}/event/${eventId}/register`;
+      const response = await axios.post(eventUri, { id: eventId });
+
+      if (response?.data) {
+        sharedAlert("Đăng ký tham gia chuyến đi thành công")
+      }
+
+    } catch (error) {
+      console.log("🚀 ~ register ~ error:", error)
+    } finally {
+      hideLoading();
     }
   };
   const invite = () => { };
@@ -94,15 +114,39 @@ export default function DetailScreen() {
       params: { eventId }
     })
   };
-  const chat = () => { };
+
+  const chat = () => {
+    router.push({
+      pathname: "/chat/event",
+      params: { eventId }
+    })
+  };
+
   const remove = async () => {
     const eventUri = `${Constants.expoConfig?.extra?.apiUrl}/event/${eventId}`;
     const response = await axios.delete<EventStatistic>(eventUri);
 
     if (response?.data) {
-      router.back();
+      sharedAlert("Huỷ chuyến đi thành công")
     }
   };
+
+  const unjoin = async () => {
+    const unJoinEventUri = `${Constants.expoConfig?.extra?.apiUrl}/event/${eventId}/unjoin`;
+    const response = await axios.post(unJoinEventUri, { id: eventId });
+
+    if (response?.data) {
+      sharedAlert("Huỷ tham gia chuyến đi thành công")
+    }
+  }
+
+  const imageSource = (user?: UserDto): ImageSourcePropType => user?.profileImages?.[0] ?
+    {
+      uri: user.profileImages[0].includes(config?.fileUrl) ?
+        user.profileImages[0] :
+        `${config?.fileUrl}/${user.profileImages[0]}`
+    } :
+    require("../../assets/images/banner-placeholder.png")
 
   return (
     <ThemedScrollView lightColor="#FFFCEE" style={styles.container}>
@@ -130,9 +174,9 @@ export default function DetailScreen() {
           <MaterialIcons style={{ marginBottom: 8 }} name="notifications" size={24} color="#8A8A8E" />
           <ThemedText type="body2Regular">Thông báo</ThemedText>
         </TouchableOpacity>}
-        {!isCreator && <TouchableOpacity onPress={() => register()} style={styles.actionButton}>
-          <MaterialIcons style={{ marginBottom: 8 }} name="group-add" size={24} color="#8A8A8E" />
-          <ThemedText type="body2Regular">Đăng ký</ThemedText>
+        {!isCreator && <TouchableOpacity onPress={() => joined ? void (0) : register()} style={styles.actionButton}>
+          <MaterialIcons style={{ marginBottom: 8 }} name={joined ? "check-circle" : "group-add"} size={24} color={joined ? "#34C759" : "#8A8A8E"} />
+          <ThemedText type="body2Regular">{joined ? 'Đã ' : ''}Đăng ký</ThemedText>
         </TouchableOpacity>}
         <TouchableOpacity onPress={() => share()} style={styles.actionButton}>
           <MaterialIcons style={{ marginBottom: 8 }} name="share" size={24} color="#8A8A8E" />
@@ -158,22 +202,25 @@ export default function DetailScreen() {
 
       <ThemedText style={styles.subtitle}>Tổ chức bởi</ThemedText>
       <View style={{ flexDirection: "row", alignItems: "center", marginBottom: 24 }}>
-        <Image source={event?.creator ? { uri: event?.creator.profileImages[0].includes(config?.fileUrl) ? event?.creator.profileImages[0] : `${config?.fileUrl}/${event?.creator.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")} style={{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }} />
+        <Image source={imageSource(event?.creator)} style={{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }} />
         <ThemedText type="defaultSemiBold">{event?.creator?.fullname}</ThemedText>
       </View>
 
       <ThemedText style={styles.subtitle}>{members?.length} thành viên tham gia</ThemedText>
       <View style={{ marginBottom: 24 }}>
-        <View>
+        <View style={{ position: "relative" }}>
           {members?.slice(0, 10).map((member, index) =>
           (
             <Image
               key={index}
-              source={member.user.profileImages[0] ? { uri: member.user.profileImages[0].includes(config?.fileUrl) ? member.user.profileImages[0] : `${config?.fileUrl}/${member.user.profileImages[0]}` } : require("../../assets/images/banner-placeholder.png")}
-              style={[{ width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 }, index > 1 ? { position: "absolute", left: 16 * index } : {}]} />)
+              source={imageSource(member.user)}
+              style={[
+                { width: 32, height: 32, resizeMode: "cover", borderRadius: 100, marginRight: 8 },
+                index > 1 ? { position: "absolute", left: 16 * index, bottom: 0 } : {}
+              ]} />)
           )}
           <ThemedText type="defaultSemiBold" style={{ marginTop: 8 }}>
-            {members?.slice(0,10).map(member => member.user.fullname).join(", ")}
+            {members?.slice(0, 10).map(member => member.user.fullname).join(", ")}
             {members && members.length > 10 ? "..." : ""}
           </ThemedText>
         </View>
@@ -184,22 +231,32 @@ export default function DetailScreen() {
         <ThemedText type="default">{event?.description}</ThemedText>
       </View>
 
-      {isCreator && (
+      {(isCreator || joined) && (
         <>
           <ThemedText style={styles.subtitle}>Quản lý</ThemedText>
           <View style={{ flexDirection: "row", justifyContent: "space-between", gap: 8, marginBottom: 24 }}>
-            <TouchableOpacity onPress={() => edit()} style={styles.actionButton}>
-              <MaterialIcons style={{ marginBottom: 8 }} name="mode-edit" size={24} color="#8A8A8E" />
-              <ThemedText type="body2Regular">Chỉnh sửa thông tin</ThemedText>
-            </TouchableOpacity>
+            {isCreator && (
+              <TouchableOpacity onPress={() => edit()} style={styles.actionButton}>
+                <MaterialIcons style={{ marginBottom: 8 }} name="mode-edit" size={24} color="#8A8A8E" />
+                <ThemedText type="body2Regular">Chỉnh sửa thông tin</ThemedText>
+              </TouchableOpacity>
+            )}
             <TouchableOpacity onPress={() => chat()} style={styles.actionButton}>
               <MaterialIcons style={{ marginBottom: 8 }} name="chat-bubble-outline" size={24} color="#8A8A8E" />
               <ThemedText type="body2Regular">Hội thoại chung</ThemedText>
             </TouchableOpacity>
-            <TouchableOpacity onPress={() => remove()} style={styles.actionButton}>
-              <MaterialIcons style={{ marginBottom: 8 }} name="delete-outline" size={24} color="#8A8A8E" />
-              <ThemedText type="body2Regular">Huỷ chuyến đi</ThemedText>
-            </TouchableOpacity>
+            {isCreator && (
+              <TouchableOpacity onPress={() => remove()} style={styles.actionButton}>
+                <MaterialIcons style={{ marginBottom: 8 }} name="delete-outline" size={24} color="#FF3B30" />
+                <ThemedText type="body2Regular" style={{ color: "#FF3B30" }}>Huỷ chuyến đi</ThemedText>
+              </TouchableOpacity>
+            )}
+            {joined && !isCreator && (
+              <TouchableOpacity onPress={() => unjoin()} style={styles.actionButton}>
+                <MaterialIcons style={{ marginBottom: 8 }} name="output" size={24} color="#FF3B30" />
+                <ThemedText type="body2Regular" style={{ color: "#FF3B30" }}>Huỷ tham gia</ThemedText>
+              </TouchableOpacity>
+            )}
           </View>
         </>
       )}

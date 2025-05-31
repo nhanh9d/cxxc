@@ -52,22 +52,24 @@ export default function LoginScreen() {
       const storedToken = await getToken();
       let isValid = false;
 
-      if (storedToken) {
-        try {
-          const decoded: any = jwtDecode(storedToken);
-          if (!decoded.exp || decoded.exp * 1000 < Date.now()) {
-            // Token hết hạn
-            await removeToken();
-            await removeToken("pushToken");
-          } else {
-            setToken(storedToken);
-            isValid = true;
-          }
-        } catch (e) {
-          // Token lỗi format
+      if (!storedToken) {
+        return;
+      }
+
+      try {
+        const decoded: any = jwtDecode(storedToken);
+        if (!decoded.exp || decoded.exp * 1000 < Date.now()) {
+          // Token hết hạn
           await removeToken();
           await removeToken("pushToken");
+        } else {
+          setToken(storedToken);
+          isValid = true;
         }
+      } catch (e) {
+        // Token lỗi format
+        await removeToken();
+        await removeToken("pushToken");
       }
 
       setTimeout(() => {

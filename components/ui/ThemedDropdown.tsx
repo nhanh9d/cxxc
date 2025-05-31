@@ -1,6 +1,7 @@
 import React, { useState } from "react";
 import { StyleSheet, Platform, View, TouchableOpacity, Modal, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
+import { ButtonType, ThemedButton } from "./ThemedButton";
 
 export type ThemedDropdownProps = {
   options?: string[]; // Optional custom item options
@@ -17,7 +18,6 @@ export default function ThemedDropdown({
 }: ThemedDropdownProps) {
   const [selectedItem, setSelectedItem] = useState<string>(value || ""); // Selected value
   const [modalVisible, setModalVisible] = useState(false);
-
   const handleItemSelect = (item: string) => {
     setSelectedItem(item); // Update selected item
     onValueChange?.(item); // Call parent callback
@@ -41,15 +41,14 @@ export default function ThemedDropdown({
               <Picker
                 selectedValue={selectedItem}
                 onValueChange={handleItemSelect}
+                itemStyle={{ color: "#000", fontSize: 16 }}
               >
                 <Picker.Item label={placeholder} value="" />
                 {options.map((option) => (
                   <Picker.Item key={option} label={option} value={option} />
                 ))}
               </Picker>
-              <TouchableOpacity onPress={() => setModalVisible(false)}>
-                <Text style={styles.closeButton}>Đóng</Text>
-              </TouchableOpacity>
+              <ThemedButton buttonType={ButtonType.primary} title="Đóng" onPress={() => setModalVisible(false)} />
             </View>
           </View>
         </Modal>
