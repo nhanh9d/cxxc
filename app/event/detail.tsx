@@ -75,18 +75,28 @@ export default function DetailScreen() {
     setJoined(!!event?.members?.filter(m => m.user.id === userId).length)
   }, [event]);
 
-  const sharedAlert = (content: string, hasButton: boolean = true, hasOption: boolean = true) => Alert.alert(
+  const sharedBackAlert = (content: string) => Alert.alert(
     "Thông báo",
     content,
-    hasButton ? [
+    [
       {
         text: "Quay về trang chủ",
         onPress: () => router.replace("/(tabs)")
       }
-    ] : [],
-    hasOption ? {
+    ],
+    {
       onDismiss: () => router.replace("/(tabs)")
-    } : undefined
+    }
+  );
+
+  const sharedAlert = () => Alert.alert(
+    "Thông báo",
+    "Hiện chức năng đang được phát triển",
+    [
+      {
+        text: "Ok"
+      }
+    ]
   );
 
   const register = async () => {
@@ -96,7 +106,7 @@ export default function DetailScreen() {
       const response = await axios.post(eventUri, { id: eventId });
 
       if (response?.data) {
-        sharedAlert("Đăng ký tham gia chuyến đi thành công")
+        sharedBackAlert("Đăng ký tham gia chuyến đi thành công")
       }
 
     } catch (error) {
@@ -105,9 +115,15 @@ export default function DetailScreen() {
       hideLoading();
     }
   };
-  const invite = () => { };
-  const share = () => { };
-  const notify = () => { };
+  const invite = () => {
+    sharedAlert();
+  };
+  const share = () => {
+    sharedAlert();
+  };
+  const notify = () => {
+    sharedAlert();
+  };
   const edit = () => {
     router.push({
       pathname: "/event/create",
@@ -127,7 +143,7 @@ export default function DetailScreen() {
     const response = await axios.delete<EventStatistic>(eventUri);
 
     if (response?.data) {
-      sharedAlert("Huỷ chuyến đi thành công")
+      sharedBackAlert("Huỷ chuyến đi thành công")
     }
   };
 
@@ -136,7 +152,7 @@ export default function DetailScreen() {
     const response = await axios.post(unJoinEventUri, { id: eventId });
 
     if (response?.data) {
-      sharedAlert("Huỷ tham gia chuyến đi thành công")
+      sharedBackAlert("Huỷ tham gia chuyến đi thành công")
     }
   }
 
