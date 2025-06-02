@@ -1,5 +1,5 @@
 import React, { useEffect } from "react";
-import { StyleSheet, Image } from "react-native";
+import { StyleSheet, Image, useColorScheme } from "react-native";
 import { useNavigation, useRouter } from "expo-router";
 import { ThemedView } from "@/components/layout/ThemedView";
 import { getToken, saveToken, removeToken } from "@/helpers/secureStore";
@@ -14,6 +14,7 @@ export default function LoginScreen() {
   const navigation = useNavigation();
   const { setToken } = useAuth();
   const axios = useApi();
+  const colorScheme = useColorScheme();
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false }); // Hide header for this screen
@@ -60,16 +61,14 @@ export default function LoginScreen() {
         const decoded: any = jwtDecode(storedToken);
         if (!decoded.exp || decoded.exp * 1000 < Date.now()) {
           // Token hết hạn
-          await removeToken();
-          await removeToken("pushToken");
+          await Promise.all([removeToken(), removeToken("pushToken")]);
         } else {
           setToken(storedToken);
           isValid = true;
         }
       } catch (e) {
         // Token lỗi format
-        await removeToken();
-        await removeToken("pushToken");
+        await Promise.all([removeToken(), removeToken("pushToken")]);
       }
 
       setTimeout(() => {
@@ -83,7 +82,7 @@ export default function LoginScreen() {
   }, []);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, colorScheme === 'dark' ? styles.containerDark : styles.containerLight]}>
       <Image
         source={require("../assets/images/logo.png")} // Replace with your image
         style={styles.logo}
@@ -94,10 +93,15 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: {
-    backgroundColor: "#FFFCEE",
     flex: 1,
     justifyContent: "center",
     alignItems: "center"
+  },
+  containerLight: {
+    backgroundColor: "#FFFCEE",
+  },
+  containerDark: {
+    backgroundColor: "#2A261F",
   },
   logo: {
     width: "75%",

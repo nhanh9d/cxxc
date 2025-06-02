@@ -88,7 +88,7 @@ export default function AttemptedEventsScreen() {
 
   return (
     <ThemedView lightColor="#FFFCEE" style={styles.container}>
-      <ThemedText type="title" style={{ marginTop: 12 }}>Chuyến đi của tôi</ThemedText>
+      <ThemedText type="title" style={{ marginTop: 12 }}>Hoạt động của tôi</ThemedText>
 
       <FlatList
         data={events}

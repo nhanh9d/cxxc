@@ -121,7 +121,7 @@ export default function CreateScreen() {
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ThemedView lightColor="#FFFCEE" style={styles.container}>
-        <ThemedText type="title" style={{ marginBottom: 24, marginTop: 12 }}>{isEdit ? "Chỉnh sửa thông tin" : "Tạo chuyến đi mới"}</ThemedText>
+        <ThemedText type="title" style={{ marginBottom: 24, marginTop: 12 }}>{isEdit ? "Chỉnh sửa thông tin" : "Hoạt động mới"}</ThemedText>
 
         <ThemedScrollView
           keyboardShouldPersistTaps="handled"

@@ -39,7 +39,6 @@ export default function IndexScreen() {
 
   useEffect(() => {
     if (token) {
-      console.log("🚀 ~ useEffect ~ token:", token)
       loadMoreEvents();
       fetchMyRidesCount();
     }
@@ -63,7 +62,6 @@ export default function IndexScreen() {
     } catch (error) {
       console.log("🚀 ~ loadMoreEvents ~ error:", error);
       setNoMoreData(true); // Nếu lỗi, chặn gọi tiếp
-      Alert.alert("Lỗi hệ thống", "Lỗi hệ thống, vui lòng thử lại sau.");
     } finally {
       setLoading(false);
     }
@@ -89,7 +87,7 @@ export default function IndexScreen() {
         <TouchableOpacity style={styles.myRideButton} onPress={() => router.push("/event/attempted-events")}>
           <View style={{ flexDirection: "row", gap: 8 }}>
             <MaterialCommunityIcons name="swap-vertical-variant" size={16} color="#FF9500" />
-            <ThemedText>Chuyến đi của tôi ({myRidesCount})</ThemedText>
+            <ThemedText>Hoạt động của tôi ({myRidesCount})</ThemedText>
           </View>
           <Fontisto name="angle-right" size={16} color="#FF9500" />
         </TouchableOpacity>

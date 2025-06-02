@@ -89,9 +89,9 @@ export default function DetailScreen() {
     }
   );
 
-  const sharedAlert = () => Alert.alert(
+  const sharedAlert = (content: string = "Hiện chức năng đang được phát triển") => Alert.alert(
     "Thông báo",
-    "Hiện chức năng đang được phát triển",
+    content,
     [
       {
         text: "Ok"
@@ -106,7 +106,8 @@ export default function DetailScreen() {
       const response = await axios.post(eventUri, { id: eventId });
 
       if (response?.data) {
-        sharedBackAlert("Đăng ký tham gia chuyến đi thành công")
+        sharedAlert("Đăng ký tham gia chuyến đi thành công");
+        router.reload();
       }
 
     } catch (error) {
