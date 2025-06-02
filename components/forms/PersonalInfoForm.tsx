@@ -9,6 +9,7 @@ import { StyleSheet } from "react-native";
 import { ThemedInput } from "../inputs/ThemedInput";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoading } from "@/contexts/LoadingContext";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 interface Props {
   personalInformation: any;
@@ -37,6 +38,7 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
   const { setToken, token } = useAuth();
   const { showLoading, hideLoading } = useLoading();
   const baseUserUrl = `${Constants.expoConfig?.extra?.apiUrl}/user/firebase`;
+  const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#1C1A14" }, 'background');
 
   const createOrUpdateUser = async () => {
     try {
@@ -73,7 +75,7 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
 
   return (
     <>
-      <ThemedView style={styles.halfWidth} lightColor="#FFFCEE" darkColor="#2B2A27">
+      <ThemedView style={styles.halfWidth}>
         <ThemedInput
           onChangeText={(value: string) => { setPersonalInformation({ ...personalInformation, fullname: value }) }}
           placeholder="Tên đầy đủ"
@@ -87,6 +89,7 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
         <ThemedView style={styles.rowContainer}>
           <ThemedDatePicker
             buttonStyle={{
+              backgroundColor,
               flexDirection: "row",
               justifyContent: "space-between",
               alignItems: "center",
@@ -97,7 +100,7 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
               height: 50,
             }}
             value={personalInformation.birthday}
-            style={[styles.halfWidth, { backgroundColor: "#FFF" }]}
+            style={[styles.halfWidth]}
             maxDate={new Date()}
             onValueChange={(value) => setPersonalInformation({ ...personalInformation, birthday: value })} />
           <ThemedDropdown

@@ -7,10 +7,13 @@ import { ThemedScrollView } from "@/components/layout/ThemedScrollView";
 import Constants from "expo-constants";
 import { Dimensions, Image, StyleSheet, View } from "react-native";
 import { useSafeAreaInsets } from "react-native-safe-area-context";
+import { useThemeColor } from "@/hooks/useThemeColor";
+
 export default function ProfileScreen() {
   const axios = useApi();
   const { showLoading, hideLoading } = useLoading();
   const insets = useSafeAreaInsets();
+  const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
 
   const [user, setUser] = useState<UserDto | null>(null);
 
@@ -54,7 +57,7 @@ export default function ProfileScreen() {
 
   return (
     <>
-      <ThemedScrollView contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + 40 }]}>
+      <ThemedScrollView contentContainerStyle={[styles.container, { paddingBottom: insets.bottom + 40, backgroundColor }]}>
         <View style={styles.row}>
           <Image source={user.profileImages?.[0] ? { uri: user.profileImages[0] } : undefined} style={styles.avatar} />
           <View>

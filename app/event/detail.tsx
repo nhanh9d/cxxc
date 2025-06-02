@@ -13,7 +13,7 @@ import { useAuth } from "@/contexts/AuthContext";
 import { useConfig } from "@/contexts/ConfigContext";
 import { useLoading } from "@/contexts/LoadingContext";
 import { UserDto } from "@/types/user";
-
+import { useThemeColor } from "@/hooks/useThemeColor";
 export default function DetailScreen() {
   const router = useRouter();
   const navigation = useNavigation();
@@ -21,6 +21,7 @@ export default function DetailScreen() {
   const { userId } = useAuth();
   const config = useConfig();
   const { showLoading, hideLoading } = useLoading();
+  const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
 
   useEffect(() => {
     navigation.setOptions({
@@ -32,7 +33,7 @@ export default function DetailScreen() {
       ),
       headerTitle: "",
       headerStyle: {
-        backgroundColor: "#FFFCEE",
+        backgroundColor,
         shadowOpacity: 0, // Remove shadow (iOS)
         elevation: 0, // Remove shadow (Android)
         borderBottomWidth: 0, // Remove bottom border
@@ -166,7 +167,7 @@ export default function DetailScreen() {
     require("../../assets/images/banner-placeholder.png")
 
   return (
-    <ThemedScrollView lightColor="#FFFCEE" style={styles.container}>
+    <ThemedScrollView style={styles.container}>
       <Image source={event?.banner ? { uri: event.banner.includes(config?.fileUrl) ? event.banner : `${config?.fileUrl}/${event.banner}` } : require("../../assets/images/banner-placeholder.png")}
         style={{ width: "100%", height: 150, resizeMode: "cover", borderRadius: 12, marginBottom: 24 }} />
 

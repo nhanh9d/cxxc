@@ -101,7 +101,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#FFFCEE",
   },
   containerDark: {
-    backgroundColor: "#2A261F",
+    backgroundColor: "#2B2A27",
   },
   logo: {
     width: "75%",

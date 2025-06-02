@@ -5,6 +5,7 @@ import { ThemedText } from "@/components/ui/ThemedText";
 import { FontAwesome } from "@expo/vector-icons";
 import { ThemedView } from "@/components/layout/ThemedView";
 import { ThemedButton } from "@/components/ui/ThemedButton";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export type ThemedDatePickerProps = ViewProps & {
   showLabel?: boolean;
@@ -15,6 +16,8 @@ export type ThemedDatePickerProps = ViewProps & {
   minDate?: Date,
   maxDate?: Date,
   value?: Date,
+  lightColor?: string;
+  darkColor?: string;
   onValueChange?: (value: Date | undefined) => void; // Callback for selection
 };
 
@@ -28,10 +31,14 @@ export default function ThemedDatePicker({
   minDate,
   maxDate,
   value,
-  onValueChange
+  onValueChange,
+  lightColor = "#FFFCEE",
+  darkColor = "#1C1A14",
 }: ThemedDatePickerProps) {
   const [date, setDate] = useState<Date>(value || new Date());
   const [showPicker, setShowPicker] = useState(false);
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const textColor = useThemeColor({ light: "#000", dark: "#FFF" }, 'text');
 
   const handleDateChange = (event: any, selectedDate: Date | undefined) => {
     if (Platform.OS !== "ios") setShowPicker(false); // Close picker for Android

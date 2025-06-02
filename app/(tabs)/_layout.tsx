@@ -10,9 +10,10 @@ import { Colors } from '@/constants/Colors';
 import { useColorScheme } from '@/hooks/useColorScheme';
 import { Ionicons, MaterialCommunityIcons, MaterialIcons, SimpleLineIcons } from '@expo/vector-icons';
 import HeaderIconBtn from '@/components/ui/HeaderIconBtn';
-
+import { useThemeColor } from '@/hooks/useThemeColor';
 export default function TabLayout() {
   const colorScheme = useColorScheme();
+  const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
   const router = useRouter();
   const segments = useSegments();
   const navigation = useNavigation();
@@ -68,7 +69,7 @@ export default function TabLayout() {
       headerRight: () => <HeaderIconBtn {...headerIconProps} />,
       headerTitle: "",
       headerStyle: {
-        backgroundColor: "#FFFCEE",
+        backgroundColor,
         shadowOpacity: 0,
         elevation: 0,
         borderBottomWidth: 0,

@@ -13,7 +13,7 @@ import Constants from 'expo-constants';
 import * as FileSystem from 'expo-file-system';
 import { Image as ImageCompressor } from 'react-native-compressor';
 import { useConfig } from "@/contexts/ConfigContext";
-import { useLoading } from "@/contexts/LoadingContext";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export type ThemedImageUploadProps = {
   placeholderImage: any; // Placeholder image source
@@ -34,14 +34,13 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
   uploadedImages,
   onUpload,
 }) => {
-  const x = Array(numberOfImages).map((_, index) => uploadedImages?.[index] || null)
   const [images, setImages] = useState<(string | undefined)[]>(
     Array(numberOfImages).fill(null).map((_, index) => uploadedImages?.[index] || undefined)
   ); // State for uploaded images
 
   const [status, requestPermission] = ImagePicker.useMediaLibraryPermissions();
   const config = useConfig();
-  const { showLoading, hideLoading } = useLoading();
+  const placeholderColor = useThemeColor({ light: "#FFFCEE", dark: "#1C1A14" }, 'background');
 
   const baseFileUrl = `${config?.fileUrl}/user/${userId ?? DEFAULT_BUCKET}`;
 
@@ -128,6 +127,7 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
             onPress={() => handleImageSelect(index)}
             style={[
               styles.imageContainer,
+              { backgroundColor: placeholderColor },
               image ? styles.selectedImageContainer : {},
               { width: `${100 / imagesPerRow - 5}%` }, // Dynamic width
             ]}
@@ -167,7 +167,6 @@ const styles = StyleSheet.create({
     marginBottom: 24,
     paddingVertical: 28,
     paddingHorizontal: 12,
-    backgroundColor: "#FFFFFF",
     borderColor: "#EEEEEF",
     borderWidth: 1,
     borderRadius: 8,

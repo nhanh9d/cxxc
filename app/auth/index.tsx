@@ -5,20 +5,10 @@ import { useNavigation, useRouter } from "expo-router";
 import { ThemedView } from "@/components/layout/ThemedView";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { ThemedButton } from "@/components/ui/ThemedButton";
-import * as Notifications from 'expo-notifications';
 
 export default function LoginScreen() {
   const router = useRouter();
   const navigation = useNavigation();
-
-  useEffect(() => {
-    const checkToken = async (
-    ) => {
-      const token = await Notifications.getDevicePushTokenAsync();
-    };
-
-    checkToken();
-  }, []);
 
   useEffect(() => {
     navigation.setOptions({ headerShown: false }); // Hide header for this screen

@@ -24,7 +24,7 @@ import MyBikeInput from "@/components/inputs/MyBikeInput";
 import { BikeInfo } from "@/types/bikeInfo";
 import { MaterialIcons } from "@expo/vector-icons";
 import { FirebaseAuthTypes } from "@react-native-firebase/auth";
-
+import { useThemeColor } from "@/hooks/useThemeColor";
 enum accountSteps {
   fillPhone,
   fillOTP,
@@ -45,6 +45,7 @@ type PersonalInformation = {
 
 export default function PhoneScreen() {
   const baseUserUrl = `${Constants.expoConfig?.extra?.apiUrl}/user/firebase`;
+  const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
 
   const [step, setStep] = useState(accountSteps.fillPhone);
   const [title, setTitle] = useState("Nhập số điện thoại");
@@ -73,21 +74,6 @@ export default function PhoneScreen() {
   const handleUpload = (images: (string | undefined)[]) => {
     setImages(images);
   };
-
-  const saveUserImages = async () => {
-    try {
-      const url = `${baseUserUrl}/${personalInformation.userId}`;
-      const response = await axios.put(url, {
-        profileImages: images.filter(x => !!x)
-      });
-
-      if (response.data) {
-        nextStep();
-      }
-    } catch (error) {
-      console.error("Error create user: ", error);
-    }
-  }
 
   const router = useRouter();
   const previousStep = useCallback(() => {
@@ -127,28 +113,9 @@ export default function PhoneScreen() {
         setStep(accountSteps.fillBike);
         break;
     }
-  }, [step, phoneNumber, personalInformation.userId, router]);
+  }, [step, phoneNumber, router]);
 
-  const navigation = useNavigation();
-  useEffect(() => {
-    navigation.setOptions({
-      headerLeft: () => (
-        <TouchableOpacity onPress={previousStep} style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons name="chevron-left" size={24} color="#999" />
-          <ThemedText>Quay lại</ThemedText>
-        </TouchableOpacity>
-      ),
-      headerTitle: "",
-      headerStyle: {
-        backgroundColor: "#FFFCEE",
-        shadowOpacity: 0, // Remove shadow (iOS)
-        elevation: 0, // Remove shadow (Android)
-        borderBottomWidth: 0, // Remove bottom border
-      }
-    });
-  }, [navigation, previousStep]);
-
-  const nextStep = () => {
+  const nextStep = useCallback(() => {
     switch (step) {
       case accountSteps.fillPhone:
         setTitle("Xác thực");
@@ -181,10 +148,44 @@ export default function PhoneScreen() {
         setStep(accountSteps.finish);
         break;
       default:
-        router.push("/(tabs)");
+        router.replace("/(tabs)");
         break;
     }
-  }
+  }, [step, phoneNumber, router]);
+
+  const saveUserImages = useCallback(async () => {
+    try {
+      const url = `${baseUserUrl}/${firebaseUserId}`;
+      const response = await axios.put(url, {
+        profileImages: images.filter(x => !!x)
+      });
+
+      if (response.data) {
+        nextStep();
+      }
+    } catch (error) {
+      console.error("Error create user: ", error);
+    }
+  }, [firebaseUserId, images, nextStep]);
+
+  const navigation = useNavigation();
+  useEffect(() => {
+    navigation.setOptions({
+      headerLeft: () => (
+        <TouchableOpacity onPress={previousStep} style={{ flexDirection: "row", alignItems: "center" }}>
+          <MaterialIcons name="chevron-left" size={24} color="#999" />
+          <ThemedText>Quay lại</ThemedText>
+        </TouchableOpacity>
+      ),
+      headerTitle: "",
+      headerStyle: {
+        backgroundColor,
+        shadowOpacity: 0, // Remove shadow (iOS)
+        elevation: 0, // Remove shadow (Android)
+        borderBottomWidth: 0, // Remove bottom border
+      }
+    });
+  }, [navigation, previousStep]);
 
   return (
     // <KeyboardAvoidingView

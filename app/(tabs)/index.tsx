@@ -10,6 +10,7 @@ import { useApi } from "@/contexts/ApiContext";
 import { Fontisto, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function IndexScreen() {
   const baseEventUrl = `${Constants.expoConfig?.extra?.apiUrl}/event`;
@@ -22,6 +23,7 @@ export default function IndexScreen() {
   const router = useRouter();
   const api = useApi();
   const { token } = useAuth();
+  const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
 
   const fetchData = async () => {
     const response = await api.get<EventDto[]>(`${baseEventUrl}?page=${page}&limit=4`);
@@ -82,7 +84,7 @@ export default function IndexScreen() {
   }, []);
 
   return (
-    <ThemedView style={styles.container}>
+    <ThemedView style={[styles.container, { backgroundColor }]}>
       {myRidesCount > 0 && (
         <TouchableOpacity style={styles.myRideButton} onPress={() => router.push("/event/attempted-events")}>
           <View style={{ flexDirection: "row", gap: 8 }}>
@@ -116,7 +118,6 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
-    backgroundColor: "#FFFCEE"
   },
   myRideButton: {
     flexDirection: "row",

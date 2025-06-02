@@ -2,11 +2,13 @@ import React, { useState } from "react";
 import { StyleSheet, Platform, View, TouchableOpacity, Modal, Text } from "react-native";
 import { Picker } from "@react-native-picker/picker";
 import { ButtonType, ThemedButton } from "./ThemedButton";
-
+import { useThemeColor } from "@/hooks/useThemeColor";
 export type ThemedDropdownProps = {
   options?: string[]; // Optional custom item options
   placeholder?: string;
   value?: string;
+  lightColor?: string;
+  darkColor?: string;
   onValueChange?: (value: string) => void; // Callback for selection
 };
 
@@ -14,7 +16,9 @@ export default function ThemedDropdown({
   options = ["Nam", "Nữ", "Khác"], // Default options
   placeholder = "Chọn giới tính",
   onValueChange,
-  value
+  value,
+  lightColor = "#FFFCEE",
+  darkColor = "#1C1A14",
 }: ThemedDropdownProps) {
   const [selectedItem, setSelectedItem] = useState<string>(value || ""); // Selected value
   const [modalVisible, setModalVisible] = useState(false);
@@ -23,25 +27,26 @@ export default function ThemedDropdown({
     onValueChange?.(item); // Call parent callback
     setModalVisible(false);
   };
-
+  const backgroundColor = useThemeColor({ light: lightColor, dark: darkColor }, 'background');
+  const textColor = useThemeColor({ light: "#000", dark: "#FFF" }, 'text');
   if (Platform.OS === 'ios') {
     return (
       <>
         <TouchableOpacity
-          style={styles.pickerContainer}
+          style={[styles.pickerContainer, { backgroundColor }]}
           onPress={() => setModalVisible(true)}
         >
-          <Text style={selectedItem ? styles.value : styles.placeholder}>
+          <Text style={[selectedItem ? styles.value : styles.placeholder, { color: textColor }]}>
             {selectedItem || placeholder}
           </Text>
         </TouchableOpacity>
         <Modal visible={modalVisible} transparent animationType="slide">
           <View style={styles.modalOverlay}>
-            <View style={styles.modalContent}>
+            <View style={[styles.modalContent, { backgroundColor }]}>
               <Picker
                 selectedValue={selectedItem}
                 onValueChange={handleItemSelect}
-                itemStyle={{ color: "#000", fontSize: 16 }}
+                itemStyle={{ color: textColor, fontSize: 16 }}
               >
                 <Picker.Item label={placeholder} value="" />
                 {options.map((option) => (
@@ -75,7 +80,6 @@ export default function ThemedDropdown({
 
 const styles = StyleSheet.create({
   pickerContainer: {
-    backgroundColor: "#FFF",
     borderWidth: 1,
     borderColor: "#FFA500",
     borderRadius: 8,
@@ -101,10 +105,11 @@ const styles = StyleSheet.create({
     backgroundColor: "rgba(0,0,0,0.3)",
   },
   modalContent: {
-    backgroundColor: "#FFF",
     borderTopLeftRadius: 16,
     borderTopRightRadius: 16,
     padding: 16,
+    borderColor: "#FFA500",
+    borderWidth: 1,
   },
   closeButton: {
     color: "#FF9500",

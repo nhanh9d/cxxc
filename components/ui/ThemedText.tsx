@@ -10,8 +10,8 @@ export type ThemedTextProps = TextProps & {
 
 export function ThemedText({
   style,
-  lightColor,
-  darkColor,
+  lightColor = "#000",
+  darkColor = "#FFF",
   type = 'default',
   ...rest
 }: ThemedTextProps) {
@@ -20,7 +20,7 @@ export function ThemedText({
   return (
     <Text
       style={[
-        { color: "#000" },
+        { color },
         type === 'default' ? styles.default : undefined,
         type === 'title' ? styles.title : undefined,
         type === 'defaultSemiBold' ? styles.defaultSemiBold : undefined,

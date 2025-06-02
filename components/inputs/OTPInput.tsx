@@ -51,7 +51,7 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
 
   useEffect(() => {
     if (pendingLogin && token) {
-      router.push("/(tabs)");
+      router.replace("/(tabs)");
     }
   }, [pendingLogin, token]);
 
