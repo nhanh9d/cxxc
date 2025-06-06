@@ -32,5 +32,20 @@
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
 	<string>1:622023085823:ios:6bea4cb923ad555b9e46ca</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
+			</array>
+		</dict>
+	</array>
+	<key>NSAppleMusicUsageDescription</key>
+	<string>CXXC cần truy cập Apple Music để xác thực.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>CXXC cần truy cập Face ID để xác thực.</string>
+	<key>CFBundleIdentifier</key>
+	<string>com.cxxc</string>
 </dict>
 </plist>

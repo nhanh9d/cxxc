@@ -1,23 +1,22 @@
-import * as AppleAuthentication from "expo-apple-authentication";
-// import { Auth, OAuthProvider, signInWithCredential } from "firebase/auth";
+import auth from '@react-native-firebase/auth';
+import { appleAuth } from '@invertase/react-native-apple-authentication';
 
-export default async function signInWithApple() {
-  try {
-    const credential = await AppleAuthentication.signInAsync({
-      requestedScopes: [
-        AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
-        AppleAuthentication.AppleAuthenticationScope.EMAIL,
-      ],
-    });
+async function onAppleButtonPress() {
+  // Start the sign-in request
+  const appleAuthRequestResponse = await appleAuth.performRequest({
+    requestedOperation: appleAuth.Operation.LOGIN,
+    requestedScopes: [appleAuth.Scope.FULL_NAME, appleAuth.Scope.EMAIL],
+  });
 
-    const { identityToken } = credential;
-    // const appleCredential = OAuthProvider.credentialFromJSON({
-    //   idToken: identityToken,
-    // });
-
-    // await signInWithCredential(auth, appleCredential);
-    alert("Apple Sign-In successful!");
-  } catch (error) {
-    console.log("Apple Sign-In failed", error);
+  // Ensure Apple returned a user identityToken
+  if (!appleAuthRequestResponse.identityToken) {
+    throw new Error('Apple Sign-In failed - no identify token returned');
   }
-};
+
+  // Create a Firebase credential from the response
+  const { identityToken, nonce } = appleAuthRequestResponse;
+  const appleCredential = auth.AppleAuthProvider.credential(identityToken, nonce);
+
+  // Sign the user in with the credential
+  return auth().signInWithCredential(appleCredential);
+}
