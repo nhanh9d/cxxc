@@ -68,7 +68,7 @@ export default function ProfileScreen() {
 
         {user.profileImages?.length > 0 && (
           <>
-            <ThemedText type="subtitleSemiBold" style={styles.subtitle}>Ảnh Profile</ThemedText>
+            <ThemedText type="subtitle" style={styles.subtitle}>Ảnh Profile</ThemedText>
             {Array.from({ length: Math.ceil(user.profileImages.length / numColumns) }).map((_, rowIdx) => (
               <View key={rowIdx} style={styles.profileImageRow}>
                 {user.profileImages.slice(rowIdx * numColumns, (rowIdx + 1) * numColumns).map((item, colIdx) => (
@@ -83,7 +83,7 @@ export default function ProfileScreen() {
 
         {user.bio?.length && (
           <>
-            <ThemedText type="subtitleSemiBold" style={styles.subtitle}>Bio</ThemedText>
+            <ThemedText type="subtitle" style={styles.subtitle}>Bio</ThemedText>
             <ThemedText>{user.bio}</ThemedText>
           </>
         )}
@@ -91,12 +91,12 @@ export default function ProfileScreen() {
         {
           user.vehicles?.length > 0 && (
             <>
-              <ThemedText type="subtitleSemiBold" style={styles.subtitle}>Phương tiện</ThemedText>
+              <ThemedText type="subtitle" style={styles.subtitle}>Phương tiện</ThemedText>
               {
                 user.vehicles.map((vehicle) => (
                   <>
-                    <ThemedText>{vehicle.fullname}</ThemedText>
-                    <ThemedText>{vehicle.cylinderCapacity}</ThemedText>
+                    <ThemedText type="subtitleSemiBold">- Tên xe: {vehicle.fullname}</ThemedText>
+                    <ThemedText type="subtitleSemiBold" style={{ marginBottom: 8 }}>- Dung tích xylanh: {vehicle.cylinderCapacity}</ThemedText>
                     {Array.from({ length: Math.ceil(vehicle.images.length / numColumns) }).map((_, rowIdx) => (
                       <View key={rowIdx} style={styles.profileImageRow}>
                         {vehicle.images.slice(rowIdx * numColumns, (rowIdx + 1) * numColumns).map((item, colIdx) => (
