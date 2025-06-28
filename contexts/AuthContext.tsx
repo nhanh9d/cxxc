@@ -1,6 +1,7 @@
 import React, { createContext, useContext, useEffect, useState } from 'react';
 import { useRouter } from 'expo-router';
 import { removeToken } from '@/helpers/secureStore';
+import auth, { FirebaseAuthTypes } from "@react-native-firebase/auth";
 
 interface AuthContextType {
   token: string | null;
@@ -21,7 +22,6 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const [token, setToken] = useState<string | null>(null);
   const [userId, setUserId] = useState<number>();
   const router = useRouter();
-
   useEffect(() => {
     try {
       if (token) {
@@ -38,6 +38,7 @@ export const AuthProvider: React.FC<{ children: React.ReactNode }> = ({ children
   const logout = async () => {
     setToken(null);
     setUserId(undefined);
+    await auth().signOut()
     await removeToken();
     await removeToken("pushToken");
     router.replace("/auth");

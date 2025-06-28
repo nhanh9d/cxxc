@@ -8,7 +8,9 @@ import { useApi } from "@/contexts/ApiContext";
 import Constants from "expo-constants";
 import { jwtDecode } from "jwt-decode";
 import messaging from "@react-native-firebase/messaging";
-
+if (__DEV__) {
+  require("../ReactotronConfig");
+}
 export default function LoginScreen() {
   const router = useRouter();
   const navigation = useNavigation();
