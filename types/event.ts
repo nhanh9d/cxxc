@@ -1,5 +1,5 @@
 import { UserDto } from "./user";
-
+import { ChatRoomDto } from "./chatRoom";
 export type EventDto = {
   id?: number;
   name?: string;
@@ -27,4 +27,5 @@ export type EventStatistic = {
   event: EventDto,
   invitedNo: number,
   rejectedNo: number,
+  chatRoom: ChatRoomDto,
 }
