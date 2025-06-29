@@ -115,13 +115,18 @@ class SocketClient {
 
   // Convert server message to Gifted Chat format
   public static convertToGiftedMessage(serverMessage: ServerMessage): IMessage {
+    // Handle both legacy and new server response formats
+    const messageId = serverMessage._id || serverMessage.id?.toString() || `${serverMessage.user?.id || 'unknown'}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`
+    const userId = serverMessage.userId || serverMessage.user?.id || 0
+    const userName = serverMessage.user?.fullname || serverMessage.user?.username || `User ${userId}`
+    
     return {
-      _id: serverMessage._id || `${serverMessage.userId}-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
+      _id: messageId,
       text: serverMessage.content,
       createdAt: new Date(serverMessage.createdAt),
       user: {
-        _id: serverMessage.userId,
-        name: serverMessage.user?.username || `User ${serverMessage.userId}`,
+        _id: userId,
+        name: userName,
         avatar: serverMessage.user?.avatar
       },
       // Add custom properties for room info and metadata

@@ -155,7 +155,7 @@ export default function ChatScreen() {
       <StatusBar barStyle="dark-content" />
       <View style={styles.content}>
         {/* Contacts Section */}
-        <View style={styles.section}>
+        {/* <View style={styles.section}>
           <ThemedText style={styles.sectionTitle}>Đã ghép cặp</ThemedText>
           <FlatList
             data={contacts}
@@ -165,7 +165,7 @@ export default function ChatScreen() {
             showsHorizontalScrollIndicator={false}
             contentContainerStyle={styles.contactsContainer}
           />
-        </View>
+        </View> */}
 
         {/* Messages Section */}
         <View style={styles.section}>

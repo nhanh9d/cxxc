@@ -86,8 +86,8 @@ export default function ConversationScreen() {
   const username = params.username as string
 
   const currentUser: User = {
-    _id: userId || 1,
-    name: 'You', // You can fetch user name from another API if needed
+    _id: Number(userId) || 1,
+    name: 'You',
     avatar: undefined
   }
 
@@ -152,9 +152,11 @@ export default function ConversationScreen() {
             const giftedMessage = SocketClient.convertToGiftedMessage(
               serverMessage
             ) as ConversationMessage
-
+            
             // Set the roomId as string for the ConversationMessage interface
             giftedMessage.roomId = serverMessage.roomId.toString()
+
+            console.log('Message positioning - Current User ID:', Number(userId), 'Message User ID:', giftedMessage.user._id, 'Will appear on:', giftedMessage.user._id === Number(userId) ? 'RIGHT' : 'LEFT')
 
             setMessages((previousMessages) =>
               GiftedChat.append(previousMessages, [giftedMessage])
