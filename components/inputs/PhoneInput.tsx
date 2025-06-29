@@ -18,7 +18,6 @@ const PhoneInput: React.FC<Props> = ({ phoneNumber, setPhoneNumber, setInputFocu
     try {
       const correctedPhoneNumber = phoneNumber.startsWith("0") ? "+84" + phoneNumber.substring(1) : phoneNumber;
       const confirm = await auth().signInWithPhoneNumber(correctedPhoneNumber);
-
       setConfirm(confirm);
       nextStep();
     } catch (error) {
