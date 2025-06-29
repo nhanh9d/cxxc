@@ -14,6 +14,7 @@ import { useConfig } from "@/contexts/ConfigContext";
 import { useLoading } from "@/contexts/LoadingContext";
 import { UserDto } from "@/types/user";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { ChatRoomDto } from "@/types/chatRoom";
 export default function DetailScreen() {
   const router = useRouter();
   const navigation = useNavigation();
@@ -49,6 +50,8 @@ export default function DetailScreen() {
   const [invitedNo, setInvitedNo] = useState<number>(0);
   const [rejectedNo, setRejectedNo] = useState<number>(0);
   const [members, setMembers] = useState<EventMember[]>();
+  const [chatRoom, setChatRoom] = useState<ChatRoomDto>();
+
   useEffect(() => {
     const getEventFromApi = async () => {
       const statisticUri = `${Constants.expoConfig?.extra?.apiUrl}/event/${eventId}/statistic`;
@@ -63,6 +66,7 @@ export default function DetailScreen() {
         setInvitedNo(response.data.invitedNo);
         setRejectedNo(response.data.rejectedNo);
         setMembers(response.data.event.members);
+        setChatRoom(response.data.chatRoom);
       }
     }
 
@@ -135,8 +139,12 @@ export default function DetailScreen() {
 
   const chat = () => {
     router.push({
-      pathname: "/chat/event",
-      params: { eventId }
+      pathname: '/chat/conversation',
+      params: {
+        roomId: chatRoom?.id,
+        roomName: chatRoom?.name,
+        username: chatRoom?.members?.find(m => m.user.id === userId)?.user.fullname
+      }
     })
   };
 

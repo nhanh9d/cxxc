@@ -93,8 +93,8 @@ export default function ProfileScreen() {
             <>
               <ThemedText type="subtitle" style={styles.subtitle}>Phương tiện</ThemedText>
               {
-                user.vehicles.map((vehicle) => (
-                  <>
+                user.vehicles.map((vehicle, index) => (
+                  <View key={index}>
                     <ThemedText type="subtitleSemiBold">- Tên xe: {vehicle.fullname}</ThemedText>
                     <ThemedText type="subtitleSemiBold" style={{ marginBottom: 8 }}>- Dung tích xylanh: {vehicle.cylinderCapacity}</ThemedText>
                     {Array.from({ length: Math.ceil(vehicle.images.length / numColumns) }).map((_, rowIdx) => (
@@ -106,7 +106,7 @@ export default function ProfileScreen() {
                         ))}
                       </View>
                     ))}
-                  </>
+                  </View>
                 ))
               }
             </>
@@ -116,8 +116,8 @@ export default function ProfileScreen() {
         {user.interests?.length > 0 && (
           <>
             <ThemedText type="subtitleSemiBold" style={styles.subtitle}>Sở thích</ThemedText>
-            {user.interests.map((interest) => (
-              <ThemedText key={interest}>- {interest}</ThemedText>
+            {user.interests.map((interest, index) => (
+              <ThemedText key={index}>- {interest}</ThemedText>
             ))}
           </>
         )}
