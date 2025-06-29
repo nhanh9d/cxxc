@@ -47,16 +47,29 @@ export interface SendMessagePayload {
 // Server response message format
 export interface ServerMessage {
   _id?: string // Optional since server might not send it
+  id?: number // Actual server response uses id
   roomId: number
-  userId: number
+  userId?: number // Legacy field
   content: string
   metadata?: Record<string, any>
   createdAt: string | Date
   updatedAt?: string | Date
   user?: {
     id: number
-    username: string
+    username?: string
+    fullname?: string // Actual server response field
     avatar?: string
+    bio?: any
+    birthday?: string
+    firebaseId?: string
+    gender?: string
+    interests?: any
+    isActive?: boolean
+    phone?: string
+    profileImages?: any[]
+    verificationImages?: any
+    pushToken?: string
+    status?: number
   }
 }
 
