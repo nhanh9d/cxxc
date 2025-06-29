@@ -366,7 +366,7 @@ export default function ConversationScreen() {
         placeholder="Nhập tin nhắn..."
         alwaysShowSend
         messagesContainerStyle={styles.messagesContainer}
-        bottomOffset={Platform.OS === 'ios' ? 90 : 0}
+        bottomOffset={Platform.OS === 'ios' ? -33 : 0}
       />
       {renderLoadingOverlay()}
     </SafeAreaView>
