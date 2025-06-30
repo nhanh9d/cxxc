@@ -80,6 +80,9 @@ export default function ConversationScreen() {
 
   const [messages, setMessages] = useState<ConversationMessage[]>([])
   const [loading, setLoading] = useState(true)
+  const [loadingEarlier, setLoadingEarlier] = useState(false)
+  const [hasMoreMessages, setHasMoreMessages] = useState(true)
+  const [currentPage, setCurrentPage] = useState(1)
   const typingTimeoutRef = useRef<NodeJS.Timeout | null>(null)
 
   const roomId = params.roomId as string
@@ -93,16 +96,20 @@ export default function ConversationScreen() {
 
   // Fetch messages from API
   const fetchMessages = useCallback(
-    async () => {
+    async (page: number = 1, isLoadingMore: boolean = false) => {
       if (!api || !roomId) return
 
       try {
-        setLoading(true)
+        if (isLoadingMore) {
+          setLoadingEarlier(true)
+        } else {
+          setLoading(true)
+        }
 
         const response = await api.get(`/chat/rooms/${roomId}/messages`, {
           params: {
-            page: 1,
-            limit: 999 // Load all messages
+            page,
+            limit: 20 // Load messages in chunks
           }
         })
 
@@ -119,16 +126,39 @@ export default function ConversationScreen() {
           }
         )
 
-        // Set initial messages (newest first)
-        setMessages(convertedMessages)
+        if (isLoadingMore) {
+          // For load earlier: API returns older messages (newest to oldest)
+          // We need to prepend them to the existing messages
+          // Since GiftedChat expects newest first, we don't reverse here
+          setMessages((prevMessages) => [
+            ...prevMessages,
+            ...convertedMessages
+          ])
+        } else {
+          // For initial load: API returns messages newest to oldest
+          // GiftedChat expects newest first, so no reverse needed
+          setMessages(convertedMessages)
+        }
+
+        // Check if there are more messages to load
+        setHasMoreMessages(page < data.totalPages)
+        setCurrentPage(page)
       } catch (error) {
         Alert.alert('Lỗi', 'Không thể tải tin nhắn')
       } finally {
         setLoading(false)
+        setLoadingEarlier(false)
       }
     },
     [api, roomId]
   )
+
+  // Load more messages (pagination)
+  const onLoadEarlier = useCallback(() => {
+    if (!loadingEarlier && hasMoreMessages) {
+      fetchMessages(currentPage + 1, true)
+    }
+  }, [fetchMessages, currentPage, loadingEarlier, hasMoreMessages])
 
   // Initialize socket connection and fetch messages
   useEffect(() => {
@@ -136,7 +166,7 @@ export default function ConversationScreen() {
       if (!token || !roomId) return
 
       // First, fetch existing messages
-      await fetchMessages()
+      await fetchMessages(1, false)
 
       // Then initialize socket connection
       try {
@@ -344,6 +374,26 @@ export default function ConversationScreen() {
     )
   }
 
+  const renderLoadEarlier = (props: any) => {
+    return (
+      <View style={styles.loadEarlierContainer}>
+        <TouchableOpacity
+          style={styles.loadEarlierButton}
+          onPress={props.onLoadEarlier}
+          disabled={loadingEarlier}
+        >
+          {loadingEarlier ? (
+            <ActivityIndicator size="small" color={COLORS.primary} />
+          ) : (
+            <ThemedText style={styles.loadEarlierText}>
+              Tải tin nhắn cũ hơn
+            </ThemedText>
+          )}
+        </TouchableOpacity>
+      </View>
+    )
+  }
+
   return (
     <SafeAreaView style={styles.container}>
       <StatusBar barStyle="dark-content" />
@@ -367,6 +417,11 @@ export default function ConversationScreen() {
         renderInputToolbar={renderInputToolbar}
         placeholder="Nhập tin nhắn..."
         alwaysShowSend
+        isLoadingEarlier={loadingEarlier}
+        infiniteScroll
+        loadEarlier={hasMoreMessages}
+        onLoadEarlier={onLoadEarlier}
+        renderLoadEarlier={renderLoadEarlier}
         messagesContainerStyle={styles.messagesContainer}
         bottomOffset={Platform.OS === 'ios' ? -33 : 0}
       />
@@ -503,6 +558,26 @@ const styles = StyleSheet.create({
     marginTop: SIZES.padding.medium,
     fontSize: 16,
     color: COLORS.gray
+  },
+  loadEarlierContainer: {
+    alignItems: 'center',
+    paddingVertical: SIZES.padding.medium
+  },
+  loadEarlierButton: {
+    paddingHorizontal: SIZES.padding.large,
+    paddingVertical: SIZES.padding.small,
+    borderRadius: SIZES.borderRadius.medium,
+    backgroundColor: COLORS.white,
+    borderWidth: 1,
+    borderColor: COLORS.border,
+    minHeight: 36,
+    justifyContent: 'center',
+    alignItems: 'center'
+  },
+  loadEarlierText: {
+    color: COLORS.primary,
+    fontSize: 14,
+    fontWeight: '500'
   },
 
   // Deprecated Styles (can be removed if not used elsewhere)
