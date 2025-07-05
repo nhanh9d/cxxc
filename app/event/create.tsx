@@ -19,13 +19,18 @@ export default function CreateScreen() {
   const router = useRouter();
   const axios = useApi();
   const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
+  const iconColor = useThemeColor({ light: "#999", dark: "#AAA" }, 'icon');
+  const buttonBgColor = useThemeColor({ light: "#fff", dark: "#3A3A3A" }, 'background');
+  const disabledBgColor = useThemeColor({ light: "#EEEEEF", dark: "#4A4A4A" }, 'background');
+  const disabledTextColor = useThemeColor({ light: "#C4C4C4", dark: "#666" }, 'text');
+  const borderColor = useThemeColor({ light: "#E5E5EA", dark: "#4A4A4A" }, 'border');
 
   const navigation = useNavigation();
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : router.replace("/(tabs)")} style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons name="chevron-left" size={24} color="#999" />
+          <MaterialIcons name="chevron-left" size={24} color={iconColor} />
           <ThemedText>Quay lại</ThemedText>
         </TouchableOpacity>
       ),
@@ -37,7 +42,7 @@ export default function CreateScreen() {
         borderBottomWidth: 0, // Remove bottom border
       }
     });
-  }, [navigation]);
+  }, [navigation, backgroundColor, iconColor, borderColor]);
 
   const { uploadImage } = useImageUpload();
   const chooseImage = async () => {
@@ -121,14 +126,16 @@ export default function CreateScreen() {
 
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
-      <ThemedView style={styles.container}>
+      <ThemedView style={styles.container} lightColor="#FFFCEE" darkColor="#2B2A27">
         <ThemedText type="title" style={{ marginBottom: 24, marginTop: 12 }}>{isEdit ? "Chỉnh sửa thông tin" : "Hoạt động mới"}</ThemedText>
 
         <ThemedScrollView
           keyboardShouldPersistTaps="handled"
+          lightColor="#FFFCEE" 
+          darkColor="#2B2A27"
         >
           {/* banner */}
-          <ThemedView style={styles.banner}>
+          <ThemedView style={styles.banner} lightColor="#FFFCEE" darkColor="#2B2A27">
             <Image
               source={
                 event?.banner
@@ -138,13 +145,19 @@ export default function CreateScreen() {
             <ThemedButton
               imageSource={require("../../assets/images/picture-icon.png")}
               imageStyle={{ width: 16, height: 16 }}
-              style={styles.bannerButton} title="Chọn hình ảnh"
-              textStyle={styles.bannerButtonText}
+              style={[styles.bannerButton, { 
+                backgroundColor: buttonBgColor,
+                borderColor: borderColor,
+                borderWidth: 1,
+                borderRadius: 8
+              }]} 
+              title="Chọn hình ảnh"
+              textStyle={[styles.bannerButtonText, { color: iconColor }]}
               onPress={() => { chooseImage() }} />
           </ThemedView>
 
           {/* name */}
-          <ThemedView style={{ marginBottom: 12 }}>
+          <ThemedView style={{ marginBottom: 12 }} lightColor="#FFFCEE" darkColor="#2B2A27">
             <ThemedInput
               style={{ fontSize: 20, paddingHorizontal: 12, paddingVertical: 16 }}
               placeholder="Tên chuyến đi"
@@ -153,7 +166,7 @@ export default function CreateScreen() {
           </ThemedView>
 
           {/* time */}
-          <ThemedView style={{ marginBottom: 12 }}>
+          <ThemedView style={{ marginBottom: 12 }} lightColor="#FFFCEE" darkColor="#2B2A27">
             <DateRangePicker
               defaultEndDate={event?.endDate}
               defaultStartDate={event?.startDate}
@@ -163,26 +176,26 @@ export default function CreateScreen() {
               setEndDate={(date) => setEvent({ ...event, endDate: date })} />
           </ThemedView>
 
-          <ThemedView style={{ marginBottom: 12 }}>
+          <ThemedView style={{ marginBottom: 12 }} lightColor="#FFFCEE" darkColor="#2B2A27">
             <SelectableInput
-              icon={<MaterialIcons name="add-location-alt" size={24} color="#999" />}
+              icon={<MaterialIcons name="add-location-alt" size={24} color={iconColor} />}
               label="Địa điểm khởi hành"
               value={event?.startLocation}
               onSave={(value) => setEvent({ ...event, startLocation: value as string })} />
           </ThemedView>
 
-          <ThemedView style={{ marginBottom: 12 }}>
+          <ThemedView style={{ marginBottom: 12 }} lightColor="#FFFCEE" darkColor="#2B2A27">
             <SelectableInput
-              icon={<MaterialIcons name="menu-book" size={24} color="#999" />}
+              icon={<MaterialIcons name="menu-book" size={24} color={iconColor} />}
               label="Mô tả"
               value={event?.description}
               multiline={true}
               onSave={(value) => setEvent({ ...event, description: value as string })} />
           </ThemedView>
 
-          <ThemedView style={{ marginBottom: 12 }}>
+          <ThemedView style={{ marginBottom: 12 }} lightColor="#FFFCEE" darkColor="#2B2A27">
             <SelectableInput
-              icon={<MaterialIcons name="people-outline" size={24} color="#999" />}
+              icon={<MaterialIcons name="people-outline" size={24} color={iconColor} />}
               label="Số lượng"
               value={event?.size}
               numeric={true}
@@ -192,8 +205,19 @@ export default function CreateScreen() {
 
         <ThemedButton
           title={isEdit ? "Cập nhật" : "Tạo chuyến đi"}
-          style={{ backgroundColor: isValid ? "#FF9500" : "#EEEEEF", marginBottom: 24 }}
-          textStyle={{ color: isValid ? "#FFF" : "#C4C4C4" }}
+          style={{ 
+            backgroundColor: isValid ? "#FF9500" : disabledBgColor, 
+            marginBottom: 24,
+            borderRadius: 8,
+            paddingVertical: 16,
+            borderWidth: 1,
+            borderColor: isValid ? "#FF9500" : borderColor
+          }}
+          textStyle={{ 
+            color: isValid ? "#FFF" : disabledTextColor,
+            fontSize: 16,
+            fontWeight: "600"
+          }}
           onPress={() => isEdit ? editEvent() : createEvent()} />
       </ThemedView>
     </TouchableWithoutFeedback>
@@ -216,7 +240,6 @@ const styles = StyleSheet.create({
   },
   bannerButton: {
     position: "absolute",
-    backgroundColor: "#fff",
     width: 120,
     bottom: 12,
     left: 12,

@@ -12,6 +12,7 @@ import {
 import { AntDesign } from "@expo/vector-icons";
 import { Picker } from "@react-native-picker/picker";
 import { ButtonType, ThemedButton } from "../ui/ThemedButton";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 type SelectableInputProps = {
   icon: React.ReactNode;
@@ -40,6 +41,17 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState(value ? value.toString() : ""); // Store as string for input
+  
+  // Theme colors
+  const backgroundColor = useThemeColor({ light: "white", dark: "#3A3A3A" }, 'background');
+  const borderColor = useThemeColor({ light: "#EEEEEF", dark: "#4A4A4A" }, 'border');
+  const textColor = useThemeColor({ light: "#333", dark: "#FFF" }, 'text');
+  const labelColor = useThemeColor({ light: "#999", dark: "#AAA" }, 'text');
+  const labelWithValueColor = useThemeColor({ light: "#666", dark: "#CCC" }, 'text');
+  const iconColor = useThemeColor({ light: "#999", dark: "#AAA" }, 'icon');
+  const modalBgColor = useThemeColor({ light: "white", dark: "#2A2A2A" }, 'background');
+  const inputBorderColor = useThemeColor({ light: "#ccc", dark: "#666" }, 'border');
+  const overlayColor = useThemeColor({ light: "rgba(0,0,0,0.5)", dark: "rgba(0,0,0,0.7)" }, 'background');
 
   const handleSave = () => {
     const newValue = numeric ? Number(inputValue) : inputValue;
@@ -50,36 +62,36 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
   if (numeric && Platform.OS === 'ios') {
     return (
       <>
-        <TouchableOpacity style={styles.container} onPress={() => setModalVisible(true)}>
+        <TouchableOpacity style={[styles.container, { backgroundColor, borderColor }]} onPress={() => setModalVisible(true)}>
           <View style={styles.icon}>{icon}</View>
           <View style={styles.textContainer}>
-            <Text style={[styles.label, value !== undefined && styles.labelWithValue]}>
+            <Text style={[styles.label, { color: labelColor }, value !== undefined && { color: labelWithValueColor }]}>
               {label}
             </Text>
-            <Text style={styles.value}>
+            <Text style={[styles.value, { color: textColor }]}>
               {value ? value : "Không giới hạn"}
             </Text>
           </View>
-          <AntDesign name="right" size={18} color="#999" />
+          <AntDesign name="right" size={18} color={iconColor} />
         </TouchableOpacity>
         <Modal visible={modalVisible} transparent animationType="slide">
           <View style={{
             flex: 1,
             justifyContent: "flex-end",
-            backgroundColor: "rgba(0,0,0,0.3)"
+            backgroundColor: overlayColor
           }}>
             <View style={{
-              backgroundColor: "#FFF",
+              backgroundColor: modalBgColor,
               borderTopLeftRadius: 16,
               borderTopRightRadius: 16,
               padding: 16,
               paddingBottom: 48,
               minHeight: 200,
             }}>
-              <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 8 }}>
+              <Text style={{ fontSize: 18, fontWeight: "bold", textAlign: "center", marginBottom: 8, color: textColor }}>
                 {label}
               </Text>
-              <Text style={{ fontSize: 16, color: "#333", textAlign: "center", marginBottom: 8 }}>
+              <Text style={{ fontSize: 16, color: textColor, textAlign: "center", marginBottom: 8 }}>
                 Đang chọn: {inputValue || "Không giới hạn"}
               </Text>
               <Picker
@@ -105,10 +117,10 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
 
   if (numeric && Platform.OS === 'android') {
     return (
-      <View style={styles.container}>
+      <View style={[styles.container, { backgroundColor, borderColor }]}>
         <View style={styles.icon}>{icon}</View>
         <View style={styles.textContainer}>
-          <Text style={[styles.label, value !== undefined && styles.labelWithValue]}>
+          <Text style={[styles.label, { color: labelColor }, value !== undefined && { color: labelWithValueColor }]}>
             {label}
           </Text>
         </View>
@@ -119,8 +131,8 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
               setInputValue(itemValue);
               onSave(Number(itemValue));
             }}
-            style={styles.picker}
-            dropdownIconColor="#999"
+            style={[styles.picker, { color: textColor }]}
+            dropdownIconColor={iconColor}
           >
             <Picker.Item label="Không giới hạn" value="" />
             {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
@@ -135,29 +147,38 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
   return (
     <>
       {/* Clickable Component */}
-      <TouchableOpacity style={styles.container} onPress={() => setModalVisible(true)}>
+      <TouchableOpacity style={[styles.container, { backgroundColor, borderColor }]} onPress={() => setModalVisible(true)}>
         <View style={styles.icon}>{icon}</View>
         <View style={styles.textContainer}>
-          <Text style={[styles.label, value !== undefined && styles.labelWithValue]}>
+          <Text style={[styles.label, { color: labelColor }, value !== undefined && { color: labelWithValueColor }]}>
             {label}
           </Text>
-          {value !== undefined && <Text style={styles.value}>{truncateText(value)}</Text>}
+          {value !== undefined && <Text style={[styles.value, { color: textColor }]}>{truncateText(value)}</Text>}
         </View>
-        <AntDesign name="right" size={18} color="#999" />
+        <AntDesign name="right" size={18} color={iconColor} />
       </TouchableOpacity>
 
       {/* Modal with Input/Textarea */}
       <Modal visible={modalVisible} animationType="slide" transparent>
-        <View style={styles.modalContainer}>
-          <View style={styles.modalContent}>
-            <Text style={styles.modalTitle}>{label}</Text>
+        <View style={[styles.modalContainer, { backgroundColor: overlayColor }]}>
+          <View style={[styles.modalContent, { backgroundColor: modalBgColor }]}>
+            <Text style={[styles.modalTitle, { color: textColor }]}>{label}</Text>
             <TextInput
-              style={[styles.input, multiline && styles.textarea]}
+              style={[
+                styles.input, 
+                multiline && styles.textarea,
+                { 
+                  borderColor: inputBorderColor,
+                  backgroundColor: backgroundColor,
+                  color: textColor
+                }
+              ]}
               value={inputValue}
               onChangeText={setInputValue}
               keyboardType={numeric ? "numeric" : "default"}
               multiline={multiline}
               placeholder={numeric ? "Nhập số hoặc để trống" : "Nhập thông tin..."}
+              placeholderTextColor={labelColor}
             />
             <View style={styles.buttonContainer}>
               <Button title="Hủy" onPress={() => setModalVisible(false)} color="gray" />
@@ -174,11 +195,9 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: "row",
     alignItems: "center",
-    backgroundColor: "white",
     padding: 12,
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: "#EEEEEF",
   },
   icon: {
     marginRight: 10,
@@ -188,26 +207,21 @@ const styles = StyleSheet.create({
   },
   label: {
     fontSize: 16,
-    color: "#999",
   },
   labelWithValue: {
     fontSize: 14,
-    color: "#666",
   },
   value: {
     fontSize: 16,
-    color: "#333",
     fontWeight: "500",
   },
   modalContainer: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
-    backgroundColor: "rgba(0,0,0,0.5)",
   },
   modalContent: {
     width: "80%",
-    backgroundColor: "white",
     padding: 20,
     borderRadius: 10,
     alignItems: "center",
@@ -220,7 +234,6 @@ const styles = StyleSheet.create({
   input: {
     width: "100%",
     borderWidth: 1,
-    borderColor: "#ccc",
     borderRadius: 8,
     padding: 10,
     fontSize: 16,

@@ -34,6 +34,8 @@ export default function DetailScreen() {
     { light: '#FFFCEE', dark: '#2B2A27' },
     'background'
   )
+  const buttonBackgroundColor = useThemeColor({ light: "#FFF", dark: "#3A3A3A" }, 'background')
+  const borderColor = useThemeColor({ light: "#EEEEEF", dark: "#4A4A4A" }, 'border')
 
   useEffect(() => {
     navigation.setOptions({
@@ -265,7 +267,7 @@ export default function DetailScreen() {
         {isCreator && (
           <TouchableOpacity
             onPress={() => invite()}
-            style={styles.actionButton}
+            style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
           >
             <MaterialIcons
               style={{ marginBottom: 8 }}
@@ -279,7 +281,7 @@ export default function DetailScreen() {
         {isCreator && (
           <TouchableOpacity
             onPress={() => notify()}
-            style={styles.actionButton}
+            style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
           >
             <MaterialIcons
               style={{ marginBottom: 8 }}
@@ -293,7 +295,7 @@ export default function DetailScreen() {
         {!isCreator && (
           <TouchableOpacity
             onPress={() => (joined ? void 0 : register())}
-            style={styles.actionButton}
+            style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
           >
             <MaterialIcons
               style={{ marginBottom: 8 }}
@@ -306,7 +308,7 @@ export default function DetailScreen() {
             </ThemedText>
           </TouchableOpacity>
         )}
-        <TouchableOpacity onPress={() => share()} style={styles.actionButton}>
+        <TouchableOpacity onPress={() => share()} style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}>
           <MaterialIcons
             style={{ marginBottom: 8 }}
             name="share"
@@ -317,7 +319,7 @@ export default function DetailScreen() {
         </TouchableOpacity>
       </View>
 
-      <ThemedText style={styles.subtitle}>Thống kê thành viên</ThemedText>
+      <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Thống kê thành viên</ThemedText>
       <View
         style={{
           flexDirection: 'row',
@@ -326,21 +328,21 @@ export default function DetailScreen() {
           marginBottom: 24
         }}
       >
-        <View style={styles.statistic}>
+        <View style={[styles.statistic, { backgroundColor: buttonBackgroundColor, borderColor, borderWidth: 1, borderRadius: 12, padding: 16 }]}>
           <ThemedText type="subtitleSemiBold">{members?.length}</ThemedText>
           <ThemedText type="body2Regular">Thành viên</ThemedText>
         </View>
-        <View style={styles.statistic}>
+        <View style={[styles.statistic, { backgroundColor: buttonBackgroundColor, borderColor, borderWidth: 1, borderRadius: 12, padding: 16 }]}>
           <ThemedText type="subtitleSemiBold">{invitedNo}</ThemedText>
           <ThemedText type="body2Regular">Đã mời</ThemedText>
         </View>
-        <View style={styles.statistic}>
+        <View style={[styles.statistic, { backgroundColor: buttonBackgroundColor, borderColor, borderWidth: 1, borderRadius: 12, padding: 16 }]}>
           <ThemedText type="subtitleSemiBold">{rejectedNo}</ThemedText>
           <ThemedText type="body2Regular">Không tham gia</ThemedText>
         </View>
       </View>
 
-      <ThemedText style={styles.subtitle}>Tổ chức bởi</ThemedText>
+      <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Tổ chức bởi</ThemedText>
       <View
         style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 24 }}
       >
@@ -359,7 +361,7 @@ export default function DetailScreen() {
         </ThemedText>
       </View>
 
-      <ThemedText style={styles.subtitle}>
+      <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>
         {members?.length} thành viên tham gia
       </ThemedText>
       <View style={{ marginBottom: 24 }}>
@@ -389,14 +391,14 @@ export default function DetailScreen() {
         </ThemedText>
       </View>
 
-      <ThemedText style={styles.subtitle}>Mô tả</ThemedText>
+      <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Mô tả</ThemedText>
       <View style={{ marginBottom: 24 }}>
         <ThemedText type="default">{event?.description}</ThemedText>
       </View>
 
       {(isCreator || joined) && (
         <>
-          <ThemedText style={styles.subtitle}>Quản lý</ThemedText>
+          <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Quản lý</ThemedText>
           <View
             style={{
               flexDirection: 'row',
@@ -408,7 +410,7 @@ export default function DetailScreen() {
             {isCreator && (
               <TouchableOpacity
                 onPress={() => edit()}
-                style={styles.actionButton}
+                style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
               >
                 <MaterialIcons
                   style={{ marginBottom: 8 }}
@@ -421,7 +423,7 @@ export default function DetailScreen() {
             )}
             <TouchableOpacity
               onPress={() => chat()}
-              style={styles.actionButton}
+              style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
             >
               <MaterialIcons
                 style={{ marginBottom: 8 }}
@@ -434,7 +436,7 @@ export default function DetailScreen() {
             {isCreator && (
               <TouchableOpacity
                 onPress={() => remove()}
-                style={styles.actionButton}
+                style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
               >
                 <MaterialIcons
                   style={{ marginBottom: 8 }}
@@ -450,7 +452,7 @@ export default function DetailScreen() {
             {joined && !isCreator && (
               <TouchableOpacity
                 onPress={() => unjoin()}
-                style={styles.actionButton}
+                style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
               >
                 <MaterialIcons
                   style={{ marginBottom: 8 }}
@@ -486,7 +488,6 @@ const styles = StyleSheet.create({
   },
   bannerButton: {
     position: 'absolute',
-    backgroundColor: '#fff',
     width: 120,
     bottom: 12,
     left: 12,
@@ -500,18 +501,15 @@ const styles = StyleSheet.create({
   },
   actionButton: {
     flex: 1,
-    backgroundColor: '#FFF',
     padding: 16,
     borderRadius: 12,
-    borderWidth: 1,
-    borderColor: '#EEEEEF'
+    borderWidth: 1
   },
   subtitle: {
     color: '#8A8A8E',
     fontSize: 14,
     fontWeight: '500',
     lineHeight: 20,
-    borderBottomColor: '#EEEEEF',
     borderBottomWidth: 1,
     paddingBottom: 4,
     marginBottom: 12

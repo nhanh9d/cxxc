@@ -7,6 +7,7 @@ import { formattedDate } from "@/helpers/date";
 import { IconSymbol } from "@/components/ui/IconSymbol";
 import { MaterialCommunityIcons } from "@expo/vector-icons";
 import { useConfig } from "@/contexts/ConfigContext";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 type EventCardProp = {
   item: EventDto,
@@ -15,6 +16,12 @@ type EventCardProp = {
 export function EventCard({ item, showMemberNo = false }: EventCardProp) {
   const router = useRouter();
   const config = useConfig();
+  const cardBackgroundColor = useThemeColor({ light: "#FFF", dark: "#3A3A3A" }, 'background');
+  const borderColor = useThemeColor({ light: "#EEEEEF", dark: "#4A4A4A" }, 'border');
+  const iconColor = useThemeColor({ light: "#999", dark: "#AAA" }, 'icon');
+  const memberNoBgColor = useThemeColor({ light: "#FFF", dark: "#2A2A2A" }, 'background');
+  const memberNoBorderColor = useThemeColor({ light: "#999", dark: "#666" }, 'border');
+  const iconSymbolColor = useThemeColor({ light: "#000", dark: "#FFF" }, 'text');
 
   const goDetail = (item: EventDto) => {
     router.push({
@@ -25,12 +32,12 @@ export function EventCard({ item, showMemberNo = false }: EventCardProp) {
 
   return (
     <TouchableOpacity onPress={() => goDetail(item)}>
-      <View style={styles.card}>
+      <View style={[styles.card, { backgroundColor: cardBackgroundColor, borderColor }]}>
         <View style={{ position: "relative" }}>
           <Image source={{ uri: item.banner?.includes(config?.fileUrl) ? item.banner : `${config?.fileUrl}/${item.banner}` }} width={16} style={styles.image} />
-          {showMemberNo && <View style={styles.memberNo}>
-            <IconSymbol name="person.2" color="#000" />
-            <ThemedText type="small">{item.members?.length}/{item.size ? item.size : "Không giới hạn"}</ThemedText>
+          {showMemberNo && <View style={[styles.memberNo, { backgroundColor: memberNoBgColor, borderColor: memberNoBorderColor }]}>
+            <IconSymbol name="person.2" color={iconSymbolColor} />
+            <ThemedText type="small" style={{ color: iconSymbolColor }}>{item.members?.length}/{item.size ? item.size : "Không giới hạn"}</ThemedText>
           </View>}
         </View>
         <View style={styles.tripInfo}>
@@ -38,15 +45,15 @@ export function EventCard({ item, showMemberNo = false }: EventCardProp) {
           <View style={{ flexDirection: "row" }}>
             {item.creator?.profileImages?.[0]
               ? <Image source={{ uri: item.creator?.profileImages[0].includes(config?.fileUrl) ? item.creator?.profileImages[0] : `${config?.fileUrl}/${item.creator?.profileImages[0]}` }} style={{ width: 16, height: 16, resizeMode: "center", borderRadius: 100, marginRight: 4 }} />
-              : <IconSymbol size={16} name="person" color="#999" style={{ marginRight: 4 }} />}
+              : <IconSymbol size={16} name="person" color={iconColor} style={{ marginRight: 4 }} />}
             <ThemedText style={styles.subText}>Tổ chức bởi {item.creator?.fullname}</ThemedText>
           </View>
           <View style={{ flexDirection: "row" }}>
-            <MaterialCommunityIcons size={16} name="calendar-blank-outline" color="#999" style={{ marginRight: 4 }} />
+            <MaterialCommunityIcons size={16} name="calendar-blank-outline" color={iconColor} style={{ marginRight: 4 }} />
             <ThemedText style={styles.subText}>Từ {item.startDate ? formattedDate(item.startDate) : ""} - {item.endDate ? formattedDate(item.endDate) : ""}</ThemedText>
           </View>
           <View style={{ flexDirection: "row" }}>
-            <MaterialCommunityIcons size={16} name="map-marker-radius-outline" color="#999" style={{ marginRight: 4 }} />
+            <MaterialCommunityIcons size={16} name="map-marker-radius-outline" color={iconColor} style={{ marginRight: 4 }} />
             <ThemedText style={styles.subText}>{item.startLocation}</ThemedText>
           </View>
         </View>
@@ -57,11 +64,9 @@ export function EventCard({ item, showMemberNo = false }: EventCardProp) {
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "white",
     borderRadius: 12,
     marginVertical: 10,
     borderWidth: 1,
-    borderColor: "#EEEEEF",
     elevation: 2,
   },
   image: {
@@ -80,7 +85,6 @@ const styles = StyleSheet.create({
   },
   subText: {
     fontSize: 14,
-    color: "#666",
     marginBottom: 2,
   },
   memberNo: {
@@ -91,11 +95,9 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     flexDirection: "row",
     gap: 4,
-    backgroundColor: "#FFF",
     alignItems: "center",
     borderRadius: 100,
-    borderWidth: 1,
-    borderColor: "#999"
+    borderWidth: 1
   }
 });
 

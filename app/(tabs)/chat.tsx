@@ -14,7 +14,7 @@ import { useRouter } from 'expo-router'
 import { ThemedText } from '@/components/ui/ThemedText'
 import { useApi } from '@/contexts/ApiContext'
 import { ChatRoom, ChatParticipant } from '@/types/chat'
-
+import { useColorScheme } from 'react-native'
 interface Contact {
   id: string
   name: string
@@ -55,7 +55,7 @@ export default function ChatScreen() {
   const [chatRooms, setChatRooms] = useState<ChatRoom[]>([])
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
-
+  const colorScheme = useColorScheme()
   const fetchChatRooms = useCallback(async () => {
     if (!api) return
 
@@ -152,7 +152,7 @@ export default function ChatScreen() {
 
   return (
     <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+      <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} />
       <View style={styles.content}>
         {/* Contacts Section */}
         {/* <View style={styles.section}>

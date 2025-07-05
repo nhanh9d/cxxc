@@ -2,13 +2,13 @@ import React, { useState, useEffect, useCallback, useRef } from 'react'
 import {
   View,
   StyleSheet,
-  SafeAreaView,
   StatusBar,
   TouchableOpacity,
   Alert,
   Platform,
   Image,
-  ActivityIndicator
+  ActivityIndicator,
+  useColorScheme
 } from 'react-native'
 import {
   GiftedChat,
@@ -77,6 +77,18 @@ export default function ConversationScreen() {
   const { token, userId } = useAuth()
   const api = useApi()
   const socketClient = useRef(SocketClient.getInstance())
+  const colorScheme = useColorScheme()
+
+  // Theme colors
+  const backgroundColor = useThemeColor({ light: COLORS.background, dark: '#2B2A27' }, 'background')
+  const textColor = useThemeColor({ light: COLORS.lightGray, dark: '#AAA' }, 'text')
+  const inputToolbarBg = useThemeColor({ light: COLORS.white, dark: '#3A3A3A' }, 'background')
+  const composerTextColor = useThemeColor({ light: COLORS.black, dark: COLORS.white }, 'text')
+  const borderColor = useThemeColor({ light: COLORS.border, dark: '#4A4A4A' }, 'border')
+  const leftBubbleBg = useThemeColor({ light: COLORS.white, dark: '#3A3A3A' }, 'background')
+  const leftBubbleTextColor = useThemeColor({ light: COLORS.black, dark: COLORS.white }, 'text')
+  const iconColor = useThemeColor({ light: COLORS.gray, dark: '#AAA' }, 'icon')
+  const loadingOverlayBg = useThemeColor({ light: 'rgba(255, 252, 238, 0.9)', dark: 'rgba(43, 42, 39, 0.9)' }, 'background')
 
   const [messages, setMessages] = useState<ConversationMessage[]>([])
   const [loading, setLoading] = useState(true)
@@ -87,6 +99,7 @@ export default function ConversationScreen() {
 
   const roomId = params.roomId as string
   const username = params.username as string
+  const roomName = params.roomName as string
 
   const currentUser: User = {
     _id: Number(userId) || 1,
@@ -232,7 +245,7 @@ export default function ConversationScreen() {
   )
 
   const onInputTextChanged = useCallback(
-    (text: string) => {
+    () => {
       // Clear existing timeout
       if (typingTimeoutRef.current) {
         clearTimeout(typingTimeoutRef.current)
@@ -250,18 +263,29 @@ export default function ConversationScreen() {
   )
 
   const renderBubble = (props: any) => {
+    const { currentMessage, previousMessage, user } = props;
+    const isLastInGroup = !previousMessage?.user || previousMessage.user._id !== currentMessage.user._id;
+    const showName = isLastInGroup && currentMessage.user._id !== user._id;
+
     return (
-      <Bubble
-        {...props}
-        wrapperStyle={{
-          right: styles.rightBubble,
-          left: styles.leftBubble
-        }}
-        textStyle={{
-          right: styles.rightBubbleText,
-          left: styles.leftBubbleText
-        }}
-      />
+      <View>
+        {showName && currentMessage.user && (
+          <ThemedText style={[styles.senderName, { color: textColor }]}>
+            {currentMessage.user.name || 'Unknown'}
+          </ThemedText>
+        )}
+        <Bubble
+          {...props}
+          wrapperStyle={{
+            right: styles.rightBubble,
+            left: [styles.leftBubble, { backgroundColor: leftBubbleBg, borderColor, marginLeft: 0 }]
+          }}
+          textStyle={{
+            right: styles.rightBubbleText,
+            left: [styles.leftBubbleText, { color: leftBubbleTextColor }]
+          }}
+        />
+      </View>
     )
   }
 
@@ -282,8 +306,8 @@ export default function ConversationScreen() {
     return (
       <Composer
         {...props}
-        textInputStyle={styles.composerTextInput}
-        placeholderTextColor="#999"
+        textInputStyle={[styles.composerTextInput, { color: composerTextColor, borderColor: COLORS.primary }]}
+        placeholderTextColor={textColor}
         multiline={true}
         keyboardAppearance="light"
         placeholder="Aa"
@@ -291,12 +315,12 @@ export default function ConversationScreen() {
     )
   }
 
-  const renderActions = (props: any) => {
+  const renderActions = () => {
     return (
       <Actions
         containerStyle={styles.actionsContainer}
         icon={() => (
-          <Ionicons name="camera" size={28} color="#333333" />
+          <Ionicons name="camera" size={28} color={iconColor} />
         )}
       />
     )
@@ -306,7 +330,7 @@ export default function ConversationScreen() {
     return (
       <InputToolbar
         {...props}
-        containerStyle={styles.inputToolbar}
+        containerStyle={[styles.inputToolbar, { backgroundColor: inputToolbarBg, borderTopColor: borderColor }]}
         primaryStyle={styles.inputPrimary}
         renderActions={renderActions}
         renderComposer={renderComposer}
@@ -331,18 +355,10 @@ export default function ConversationScreen() {
         }}
         style={styles.messageAvatar}
       />
-      <ThemedText>{username}</ThemedText>
+      <ThemedText>{roomName}</ThemedText>
     </TouchableOpacity>
   )
 
-  const backgroundColor = useThemeColor(
-    { light: COLORS.background, dark: '#2B2A27' },
-    'background'
-  )
-  const textColor = useThemeColor(
-    { light: COLORS.lightGray, dark: '#2B2A27' }, 
-    'text'
-  )
 
   const navigation = useNavigation()
   useEffect(() => {
@@ -362,12 +378,12 @@ export default function ConversationScreen() {
     if (!loading) return null
     
     return (
-      <View style={styles.loadingOverlay}>
+      <View style={[styles.loadingOverlay, { backgroundColor: loadingOverlayBg }]}>
         <ActivityIndicator 
           size="large" 
           color={COLORS.primary} 
         />
-        <ThemedText style={styles.loadingText}>
+        <ThemedText style={[styles.loadingText, { color: iconColor }]}>
           Đang tải tin nhắn...
         </ThemedText>
       </View>
@@ -378,7 +394,7 @@ export default function ConversationScreen() {
     return (
       <View style={styles.loadEarlierContainer}>
         <TouchableOpacity
-          style={styles.loadEarlierButton}
+          style={[styles.loadEarlierButton, { backgroundColor: leftBubbleBg, borderColor }]}
           onPress={props.onLoadEarlier}
           disabled={loadingEarlier}
         >
@@ -395,8 +411,8 @@ export default function ConversationScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
-      <StatusBar barStyle="dark-content" />
+    <View style={[styles.container, { backgroundColor }]}>
+      <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} />
       <GiftedChat
         renderTime={() => null}
         renderDay={() => {
@@ -422,22 +438,21 @@ export default function ConversationScreen() {
         loadEarlier={hasMoreMessages}
         onLoadEarlier={onLoadEarlier}
         renderLoadEarlier={renderLoadEarlier}
-        messagesContainerStyle={styles.messagesContainer}
-        bottomOffset={Platform.OS === 'ios' ? -33 : 0}
+        messagesContainerStyle={[styles.messagesContainer, { backgroundColor, paddingHorizontal: 10 }]}
+        bottomOffset={0}
       />
       {renderLoadingOverlay()}
-    </SafeAreaView>
+    </View>
   )
 }
 
 const styles = StyleSheet.create({
   // Container Styles
   container: {
-    flex: 1,
-    backgroundColor: COLORS.background
+    flex: 1
   },
   messagesContainer: {
-    backgroundColor: COLORS.background
+    flex: 1
   },
 
   // Header Styles
@@ -451,8 +466,8 @@ const styles = StyleSheet.create({
   // Message Bubble Styles
   rightBubble: {
     backgroundColor: COLORS.primary,
-    marginRight: 8,
-    marginBottom: 8,
+    marginRight: 0,
+    marginBottom: 4,
     borderTopRightRadius: SIZES.borderRadius.medium,
     borderBottomRightRadius: 4,
     borderTopLeftRadius: SIZES.borderRadius.medium,
@@ -460,11 +475,9 @@ const styles = StyleSheet.create({
     padding: SIZES.padding.small
   },
   leftBubble: {
-    backgroundColor: COLORS.white,
-    marginLeft: 8,
-    marginBottom: 8,
+    marginLeft: 0,
+    marginBottom: 4,
     borderWidth: 1,
-    borderColor: COLORS.bubbleBorder,
     borderTopRightRadius: SIZES.borderRadius.medium,
     borderBottomRightRadius: SIZES.borderRadius.medium,
     borderTopLeftRadius: SIZES.borderRadius.medium,
@@ -476,19 +489,24 @@ const styles = StyleSheet.create({
     fontSize: 16
   },
   leftBubbleText: {
-    color: COLORS.black,
     fontSize: 16
+  },
+  senderName: {
+    fontSize: 12,
+    color: '#999',
+    marginLeft: 0,
+    marginBottom: 4,
+    fontWeight: '500'
   },
 
   // Input Toolbar Styles
   inputToolbar: {
-    backgroundColor: COLORS.white,
-    paddingVertical: 8,
+    paddingTop: 8,
     paddingHorizontal: SIZES.padding.extraLarge,
+    paddingBottom: Platform.OS === 'ios' ? 34 : 20,
     flexDirection: 'row',
     alignItems: 'flex-end',
-    borderTopWidth: 1,
-    borderTopColor: COLORS.border
+    borderTopWidth: 1
   },
   inputPrimary: {
     flexDirection: 'row',
@@ -505,10 +523,8 @@ const styles = StyleSheet.create({
     lineHeight: 20,
     paddingHorizontal: SIZES.padding.large,
     paddingVertical: SIZES.padding.medium,
-    color: COLORS.black,
     backgroundColor: 'transparent',
     borderWidth: 1,
-    borderColor: COLORS.primary,
     borderRadius: SIZES.borderRadius.large,
     marginLeft: SIZES.padding.medium,
     maxHeight: 100,
@@ -549,15 +565,13 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     bottom: 0,
-    backgroundColor: 'rgba(255, 252, 238, 0.9)',
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 1000
   },
   loadingText: {
     marginTop: SIZES.padding.medium,
-    fontSize: 16,
-    color: COLORS.gray
+    fontSize: 16
   },
   loadEarlierContainer: {
     alignItems: 'center',
@@ -567,9 +581,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: SIZES.padding.large,
     paddingVertical: SIZES.padding.small,
     borderRadius: SIZES.borderRadius.medium,
-    backgroundColor: COLORS.white,
     borderWidth: 1,
-    borderColor: COLORS.border,
     minHeight: 36,
     justifyContent: 'center',
     alignItems: 'center'

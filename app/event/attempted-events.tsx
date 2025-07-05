@@ -8,6 +8,7 @@ import { EventCard } from "@/components/cards/EventCard";
 import { EventDto } from "@/types/event";
 import Constants from "expo-constants";
 import { useApi } from "@/contexts/ApiContext";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function AttemptedEventsScreen() {
   const router = useRouter();
@@ -18,24 +19,28 @@ export default function AttemptedEventsScreen() {
   const [noMoreData, setNoMoreData] = useState(false);
   const [loading, setLoading] = useState(false);
   const [refreshing, setRefreshing] = useState(false);
+  
+  // Theme colors
+  const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
+  const iconColor = useThemeColor({ light: "#999", dark: "#AAA" }, 'icon');
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity onPress={() => router.back()} style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons name="chevron-left" size={24} color="#999" />
+          <MaterialIcons name="chevron-left" size={24} color={iconColor} />
           <ThemedText>Quay lại</ThemedText>
         </TouchableOpacity>
       ),
       headerTitle: "",
       headerStyle: {
-        backgroundColor: "#FFFCEE",
-      shadowOpacity: 0,
+        backgroundColor,
+        shadowOpacity: 0,
         elevation: 0,
         borderBottomWidth: 0,
       }
     });
-  }, [navigation]);
+  }, [navigation, backgroundColor, iconColor]);
 
   const fetchData = async () => {
     const baseEventUrl = `${Constants.expoConfig?.extra?.apiUrl}/event`;
@@ -87,7 +92,7 @@ export default function AttemptedEventsScreen() {
   }, []);
 
   return (
-    <ThemedView lightColor="#FFFCEE" style={styles.container}>
+    <ThemedView lightColor="#FFFCEE" darkColor="#2B2A27" style={styles.container}>
       <ThemedText type="title" style={{ marginTop: 12 }}>Hoạt động của tôi</ThemedText>
 
       <FlatList
@@ -102,7 +107,7 @@ export default function AttemptedEventsScreen() {
         contentContainerStyle={{ paddingBottom: 20 }}
         onEndReached={loadMoreEvents}
         onEndReachedThreshold={0.1}
-        ListFooterComponent={loading ? <ActivityIndicator size="small" color="#999" /> : null}
+        ListFooterComponent={loading ? <ActivityIndicator size="small" color={iconColor} /> : null}
       />
     </ThemedView>
   );
