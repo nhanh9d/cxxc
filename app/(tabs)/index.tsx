@@ -24,6 +24,8 @@ export default function IndexScreen() {
   const api = useApi();
   const { token } = useAuth();
   const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
+  const buttonBackgroundColor = useThemeColor({ light: "#FFF", dark: "#3A3A3A" }, 'background');
+  const borderColor = useThemeColor({ light: "#EEEEEF", dark: "#4A4A4A" }, 'border');
 
   const fetchData = async () => {
     const response = await api.get<EventDto[]>(`${baseEventUrl}?page=${page}&limit=4`);
@@ -86,7 +88,16 @@ export default function IndexScreen() {
   return (
     <ThemedView style={[styles.container, { backgroundColor }]}>
       {myRidesCount > 0 && (
-        <TouchableOpacity style={styles.myRideButton} onPress={() => router.push("/event/attempted-events")}>
+        <TouchableOpacity 
+          style={[
+            styles.myRideButton, 
+            { 
+              backgroundColor: buttonBackgroundColor,
+              borderColor: borderColor 
+            }
+          ]} 
+          onPress={() => router.push("/event/attempted-events")}
+        >
           <View style={{ flexDirection: "row", gap: 8 }}>
             <MaterialCommunityIcons name="swap-vertical-variant" size={16} color="#FF9500" />
             <ThemedText>Hoạt động của tôi ({myRidesCount})</ThemedText>
@@ -121,9 +132,7 @@ const styles = StyleSheet.create({
   },
   myRideButton: {
     flexDirection: "row",
-    backgroundColor: "#FFF",
     borderWidth: 1,
-    borderColor: "#EEEEEF",
     paddingVertical: 12,
     paddingHorizontal: 8,
     borderRadius: 12,

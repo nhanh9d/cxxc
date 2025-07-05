@@ -4,6 +4,7 @@ import { ThemedInput } from "@/components/inputs/ThemedInput";
 import { ButtonType, ThemedButton } from "@/components/ui/ThemedButton";
 import { StyleSheet } from "react-native";
 import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth';
+import { useLoading } from "@/contexts/LoadingContext";
 
 interface Props {
   phoneNumber: string;
@@ -13,15 +14,24 @@ interface Props {
   nextStep: () => void;
 }
 
+const VN_PHONE_PREFIX = "+84";
+
 const PhoneInput: React.FC<Props> = ({ phoneNumber, setPhoneNumber, setInputFocused, setConfirm, nextStep }) => {
+  const { showLoading, hideLoading } = useLoading();
+
   const sendVerification = async () => {
     try {
-      const correctedPhoneNumber = phoneNumber.startsWith("0") ? "+84" + phoneNumber.substring(1) : phoneNumber;
+      showLoading();
+      // Remove all whitespace from phone number
+      const cleanedPhoneNumber = phoneNumber.replace(/\s/g, '');
+      const correctedPhoneNumber = cleanedPhoneNumber.startsWith("0") ? VN_PHONE_PREFIX + cleanedPhoneNumber.substring(1) : cleanedPhoneNumber;
       const confirm = await auth().signInWithPhoneNumber(correctedPhoneNumber);
       setConfirm(confirm);
       nextStep();
     } catch (error) {
       console.error("Error during sign-in: ", error);
+    } finally {
+      hideLoading();
     }
   };
 

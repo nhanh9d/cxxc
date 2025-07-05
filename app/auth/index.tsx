@@ -79,8 +79,13 @@ export default function LoginScreen() {
           }}
           title="Số điện thoại"
           onPress={async () => {
-            await auth().signOut()
-            router.push('/auth/phone')
+            try {
+              await auth().signOut()
+            } catch (error) {
+              console.log(error)
+            } finally {
+              router.push('/auth/phone')
+            }
           }}
           imageSource={require('../../assets/images/phone-icon.png')}
           imageStyle={{ width: 36, height: 36 }}

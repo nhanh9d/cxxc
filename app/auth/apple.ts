@@ -20,3 +20,5 @@ async function onAppleButtonPress() {
   // Sign the user in with the credential
   return auth().signInWithCredential(appleCredential);
 }
+
+export default onAppleButtonPress;
