@@ -15,6 +15,7 @@ import { ThemedText } from '@/components/ui/ThemedText'
 import { useApi } from '@/contexts/ApiContext'
 import { ChatRoom, ChatParticipant } from '@/types/chat'
 import { useColorScheme } from 'react-native'
+import { useThemeColor } from '@/hooks/useThemeColor'
 interface Contact {
   id: string
   name: string
@@ -56,6 +57,16 @@ export default function ChatScreen() {
   const [loading, setLoading] = useState(true)
   const [refreshing, setRefreshing] = useState(false)
   const colorScheme = useColorScheme()
+  
+  // Theme colors
+  const backgroundColor = useThemeColor({ light: '#FFFCEE', dark: '#2B2A27' }, 'background')
+  const cardBackgroundColor = useThemeColor({ light: '#FFF', dark: '#3A3A3A' }, 'background')
+  const textColor = useThemeColor({ light: '#000', dark: '#FFF' }, 'text')
+  const subtitleColor = useThemeColor({ light: '#8E8E93', dark: '#AAA' }, 'text')
+  const messageTextColor = useThemeColor({ light: '#666', dark: '#CCC' }, 'text')
+  const timeColor = useThemeColor({ light: '#999', dark: '#AAA' }, 'text')
+  const emptyTextColor = useThemeColor({ light: '#999', dark: '#AAA' }, 'text')
+  const borderColor = useThemeColor({ light: '#FFF', dark: '#4A4A4A' }, 'border')
   const fetchChatRooms = useCallback(async () => {
     if (!api) return
 
@@ -97,18 +108,19 @@ export default function ChatScreen() {
     return {
       name: room.name,
       subtitle: `${room.memberCount} thành viên`,
-      avatar: null, // No avatar info in current API
+      avatar: room.lastMessage?.user?.profileImages?.[0] || null, // No avatar info in current API
       isOnline: false
     }
   }
   const renderContact = ({ item }: { item: Contact }) => (
     <TouchableOpacity style={styles.contactItem}>
       <Image source={{ uri: item.avatar }} style={styles.contactAvatar} />
-      <ThemedText style={styles.contactName}>{item.name}</ThemedText>
+      <ThemedText style={[styles.contactName, { color: textColor }]}>{item.name}</ThemedText>
     </TouchableOpacity>
   )
 
   const renderMessage = ({ item }: { item: ChatRoom }) => {
+    console.log("🚀 ~ renderMessage ~ item:", item)
     const displayInfo = getRoomDisplayInfo(item)
     const lastMessage = item.lastMessage
     const handlePress = () => {
@@ -123,7 +135,7 @@ export default function ChatScreen() {
     }
 
     return (
-      <TouchableOpacity style={styles.messageItem} onPress={handlePress}>
+      <TouchableOpacity style={[styles.messageItem, { backgroundColor: cardBackgroundColor, borderColor }]} onPress={handlePress}>
         <View style={styles.messageLeft}>
           <View style={styles.avatarContainer}>
             <Image
@@ -132,18 +144,18 @@ export default function ChatScreen() {
               }}
               style={styles.messageAvatar}
             />
-            {displayInfo.isOnline && <View style={styles.onlineIndicator} />}
+            {displayInfo.isOnline && <View style={[styles.onlineIndicator, { borderColor: cardBackgroundColor }]} />}
           </View>
           <View style={styles.messageContent}>
-            <ThemedText style={styles.messageName}>
+            <ThemedText style={[styles.messageName, { color: textColor }]}>
               {displayInfo.name}
             </ThemedText>
-            <ThemedText style={styles.messageText}>
+            <ThemedText style={[styles.messageText, { color: messageTextColor }]}>
               {lastMessage?.message || displayInfo.subtitle}
             </ThemedText>
           </View>
         </View>
-        <ThemedText style={styles.messageTime}>
+        <ThemedText style={[styles.messageTime, { color: timeColor }]}>
           {formatTime(item.updatedAt)}
         </ThemedText>
       </TouchableOpacity>
@@ -151,7 +163,7 @@ export default function ChatScreen() {
   }
 
   return (
-    <SafeAreaView style={styles.container}>
+    <SafeAreaView style={[styles.container, { backgroundColor }]}>
       <StatusBar barStyle={colorScheme === "dark" ? "light-content" : "dark-content"} />
       <View style={styles.content}>
         {/* Contacts Section */}
@@ -169,7 +181,7 @@ export default function ChatScreen() {
 
         {/* Messages Section */}
         <View style={styles.section}>
-          <ThemedText style={styles.sectionTitle}>Tin nhắn</ThemedText>
+          <ThemedText style={[styles.sectionTitle, { color: subtitleColor }]}>Tin nhắn</ThemedText>
           <FlatList
             data={chatRooms}
             renderItem={renderMessage}
@@ -182,9 +194,9 @@ export default function ChatScreen() {
             ListEmptyComponent={
               <View style={styles.emptyContainer}>
                 {loading ? (
-                  <ThemedText style={styles.emptyText}>Đang tải...</ThemedText>
+                  <ThemedText style={[styles.emptyText, { color: emptyTextColor }]}>Đang tải...</ThemedText>
                 ) : (
-                  <ThemedText style={styles.emptyText}>
+                  <ThemedText style={[styles.emptyText, { color: emptyTextColor }]}>
                     Chưa có tin nhắn nào
                   </ThemedText>
                 )}
@@ -200,7 +212,6 @@ export default function ChatScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#FFFCEE'
   },
   header: {
     paddingHorizontal: 24,
@@ -210,7 +221,6 @@ const styles = StyleSheet.create({
   headerTitle: {
     fontSize: 32,
     fontWeight: 'bold',
-    color: '#000'
   },
   content: {
     flex: 1,
@@ -222,7 +232,6 @@ const styles = StyleSheet.create({
   sectionTitle: {
     fontSize: 16,
     fontWeight: '400',
-    color: '#8E8E93',
     marginBottom: 12,
     marginHorizontal: 20,
     letterSpacing: 0.3
@@ -246,7 +255,6 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: '600',
     textAlign: 'center',
-    color: '#000',
     lineHeight: 18
   },
   messagesContainer: {
@@ -259,7 +267,6 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 12,
     paddingHorizontal: 16,
-    backgroundColor: '#FFF',
     borderRadius: 16,
     marginBottom: 12,
     shadowColor: '#000',
@@ -293,8 +300,7 @@ const styles = StyleSheet.create({
     height: 12,
     borderRadius: 6,
     backgroundColor: '#FF6B6B',
-    borderWidth: 2,
-    borderColor: '#FFF'
+    borderWidth: 2
   },
   messageContent: {
     flex: 1
@@ -302,21 +308,17 @@ const styles = StyleSheet.create({
   messageName: {
     fontSize: 16,
     fontWeight: '600',
-    color: '#000',
     marginBottom: 2
   },
   messageText: {
     fontSize: 14,
-    color: '#666'
   },
   messageTime: {
     fontSize: 12,
-    color: '#999',
     marginLeft: 8
   },
   emptyText: {
     fontSize: 16,
-    color: '#999',
     textAlign: 'center',
     marginTop: 32,
     fontStyle: 'italic'

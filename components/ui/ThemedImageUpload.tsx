@@ -46,6 +46,7 @@ export const ThemedImageUpload: React.FC<ThemedImageUploadProps> = ({
 
   const getUploadUrl = async (fileName: string, userId?: string) => {
     const url = `${Constants.expoConfig?.extra?.apiUrl}/file/get-upload-url/${userId ?? DEFAULT_BUCKET}/${fileName}`;
+    console.log("🚀 ~ getUploadUrl ~ url:", url)
     const result = await axios.get(url);
 
     return result.data;

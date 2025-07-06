@@ -15,7 +15,7 @@ interface Props {
   confirmation: FirebaseAuthTypes.ConfirmationResult | undefined;
   setFirebaseUserId: (value: string) => void;
   setInputFocused: (value: boolean) => void;
-  nextStep: () => void;
+  nextStep: (firebaseUserId?: string) => void;
 }
 
 const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFocused, nextStep }) => {
@@ -25,6 +25,7 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
   const router = useRouter();
   const { setToken, token } = useAuth();
   const [pendingLogin, setPendingLogin] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const handleSignIn = async (user: FirebaseAuthTypes.User) => {
     setFirebaseUserId(user.uid);
@@ -36,7 +37,7 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
       setToken(response.data.accessToken);
       setPendingLogin(true);
     } else {
-      nextStep();
+      nextStep(user.uid);
     }
   }
 
@@ -56,6 +57,7 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
   }, [pendingLogin, token]);
 
   const confirmCode = async () => {
+    setLoading(true);
     try {
       if (!confirmation) {
         throw new Error("Couldn't retrieve confirmation from previous step");
@@ -72,6 +74,8 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
       console.error("Error verifying code: ", error);
       setErrorOTP(true);
       setVerificationCode("");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -98,10 +102,11 @@ const OTPInput: React.FC<Props> = ({ confirmation, setFirebaseUserId, setInputFo
         </ThemedText> : null}
       </ThemedView>
       <ThemedButton
-        title="Tiếp tục"
+        title={loading ? "Đang xác thực..." : "Tiếp tục"}
         onPress={confirmCode}
         buttonType={ButtonType.primary}
         style={{ marginBottom: 24 }}
+        disabled={loading}
       />
     </>
   );

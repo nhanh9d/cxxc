@@ -24,3 +24,12 @@ export type UserDto = {
   bio: string,
   interests: string[],
 }
+
+export type PersonalInformation = {
+  userId?: number,
+  fullname?: string,
+  birthday?: Date | undefined,
+  gender?: string,
+  firebaseId: string,
+  accessToken?: string
+};

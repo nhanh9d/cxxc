@@ -23,33 +23,34 @@ interface PhoneVerificationProps {
 
 export default function PhoneVerification({ 
   onVerificationComplete, 
-  isInputFocused,
   setInputFocused 
 }: PhoneVerificationProps) {
   const [step, setStep] = useState(VerificationSteps.fillPhone);
   const [title, setTitle] = useState("Nhập số điện thoại");
   const [subtitle, setSubtitle] = useState("Số điện thoại được dùng để xác minh tài khoản và sẽ không hiển thị trên hồ sơ của bạn.");
-
-  // Phone
   const [phoneNumber, setPhoneNumber] = useState("");
   const [confirmation, setConfirm] = useState<FirebaseAuthTypes.ConfirmationResult | undefined>();
-
-  // OTP
   const [firebaseUserId, setFirebaseUserId] = useState("");
 
-  const nextStep = useCallback(() => {
+  const cleanPhoneNumber = (phone: string) => phone.replace(/\s/g, '');
+
+  const nextStep = useCallback((passedFirebaseUserId?: string) => {
     switch (step) {
       case VerificationSteps.fillPhone:
         setTitle("Xác thực");
-        // Clean phone number for display
-        const cleanedPhone = phoneNumber.replace(/\s/g, '');
+        const cleanedPhone = cleanPhoneNumber(phoneNumber);
         setSubtitle(`Mã xác thực đã được gửi đến: ${cleanedPhone} Nhập mã vào ô bên dưới để xác minh tài khoản.`);
         setStep(VerificationSteps.fillOTP);
         break;
       case VerificationSteps.fillOTP:
-        // Pass cleaned phone number to completion handler
-        const cleanedPhoneNumber = phoneNumber.replace(/\s/g, '');
-        onVerificationComplete(cleanedPhoneNumber, firebaseUserId);
+        const userId = passedFirebaseUserId || firebaseUserId;
+        if (userId) {
+          setFirebaseUserId(userId);
+          const cleanedPhoneNumber = cleanPhoneNumber(phoneNumber);
+          onVerificationComplete(cleanedPhoneNumber, userId);
+        } else {
+          console.error('No firebaseUserId available');
+        }
         break;
     }
   }, [step, phoneNumber, firebaseUserId, onVerificationComplete]);
@@ -62,7 +63,7 @@ export default function PhoneVerification({
           {subtitle}
         </ThemedText>
         
-        {step === VerificationSteps.fillPhone ? (
+        {step === VerificationSteps.fillPhone && (
           <PhoneInput
             phoneNumber={phoneNumber}
             setPhoneNumber={setPhoneNumber}
@@ -70,16 +71,16 @@ export default function PhoneVerification({
             setConfirm={setConfirm}
             nextStep={nextStep} 
           />
-        ) : null}
+        )}
 
-        {step === VerificationSteps.fillOTP ? (
+        {step === VerificationSteps.fillOTP && (
           <OTPInput
             confirmation={confirmation}
             setFirebaseUserId={setFirebaseUserId}
             setInputFocused={setInputFocused}
             nextStep={nextStep} 
           />
-        ) : null}
+        )}
       </ThemedView>
     </TouchableWithoutFeedback>
   );

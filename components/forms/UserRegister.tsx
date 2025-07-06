@@ -15,6 +15,9 @@ import PersonalInfoForm from "./PersonalInfoForm";
 import KnowYourCustomer from "./KnowYourCustomer";
 import MyBikeInput from "@/components/inputs/MyBikeInput";
 import { BikeInfo } from "@/types/bikeInfo";
+import { useAuth } from "@/contexts/AuthContext";
+import { saveToken } from "@/helpers/secureStore";
+import { PersonalInformation } from "@/types/user";
 
 enum RegistrationSteps {
   fillPersonalInfomation,
@@ -23,14 +26,6 @@ enum RegistrationSteps {
   fillBike,
   finish
 }
-
-type PersonalInformation = {
-  userId?: number,
-  fullname?: string,
-  birthday?: Date | undefined,
-  gender?: string,
-  firebaseId?: string
-};
 
 interface UserRegisterProps {
   phoneNumber: string;
@@ -48,13 +43,15 @@ export default function UserRegister({
   onRegistrationComplete
 }: UserRegisterProps) {
   const baseUserUrl = `${Constants.expoConfig?.extra?.apiUrl}/user/firebase`;
+  const { setToken } = useAuth();
 
   const [step, setStep] = useState(RegistrationSteps.fillPersonalInfomation);
   const [title, setTitle] = useState("Nhập thông tin cá nhân");
   const [subtitle, setSubtitle] = useState("Hãy cung cấp một số thông tin để mọi người hiểu rõ hơn về bạn nhé!");
 
   // Personal information
-  const [personalInformation, setPersonalInformation] = useState<PersonalInformation>({});
+  const [personalInformation, setPersonalInformation] = useState<PersonalInformation>({ firebaseId: firebaseUserId });
+  console.log("🚀 ~ personalInformation:", personalInformation)
 
   // User profile images
   const [images, setImages] = useState<(string | undefined)[]>([]);
@@ -69,7 +66,7 @@ export default function UserRegister({
     setImages(images);
   };
 
-  const nextStep = useCallback(() => {
+  const nextStep = useCallback(async () => {
     switch (step) {
       case RegistrationSteps.fillPersonalInfomation:
         setTitle("Thêm ảnh của bạn");
@@ -92,10 +89,15 @@ export default function UserRegister({
         setStep(RegistrationSteps.finish);
         break;
       default:
+        // Set the token when registration is complete
+        if (personalInformation.accessToken) {
+          await saveToken("accessToken", personalInformation.accessToken);
+          setToken(personalInformation.accessToken);
+        }
         onRegistrationComplete();
         break;
     }
-  }, [step, onRegistrationComplete]);
+  }, [step, onRegistrationComplete, personalInformation.accessToken, setToken]);
 
   const saveUserImages = useCallback(async () => {
     try {
@@ -128,7 +130,6 @@ export default function UserRegister({
             personalInformation={personalInformation}
             setPersonalInformation={setPersonalInformation}
             phoneNumber={phoneNumber}
-            firebaseUserId={firebaseUserId}
             setInputFocused={setInputFocused}
             nextStep={nextStep} />
         ) : null}
@@ -165,7 +166,7 @@ export default function UserRegister({
         {step === RegistrationSteps.fillBike ? (
           <MyBikeInput
             userId={personalInformation.userId}
-            firebaseUserId={firebaseUserId}
+            firebaseUserId={personalInformation.firebaseId}
             bikeInfomation={bikeInfomation}
             setBikeInformation={setBikeInformation}
             setInputFocused={setInputFocused}

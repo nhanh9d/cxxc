@@ -5,17 +5,17 @@ import ThemedDropdown from "@/components/ui/ThemedDropdown";
 import ThemedDatePicker from "@/components/ui/ThemedDatePicker";
 import axios, { AxiosResponse } from "axios";
 import Constants from "expo-constants";
-import { StyleSheet } from "react-native";
+import { StyleSheet, Keyboard } from "react-native";
 import { ThemedInput } from "../inputs/ThemedInput";
 import { useAuth } from "@/contexts/AuthContext";
 import { useLoading } from "@/contexts/LoadingContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
+import { PersonalInformation } from "@/types/user";
 
 interface Props {
-  personalInformation: any;
+  personalInformation: PersonalInformation;
   phoneNumber: string;
-  firebaseUserId: string;
-  setPersonalInformation: (info: any) => void;
+  setPersonalInformation: (info: PersonalInformation) => void;
   setInputFocused: (state: boolean) => void;
   nextStep: () => void;
 }
@@ -34,8 +34,8 @@ type UserResponseDto = UserDto & {
   accessToken: string;
 }
 
-const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, firebaseUserId, setPersonalInformation, setInputFocused, nextStep }) => {
-  const { setToken, token } = useAuth();
+const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, setPersonalInformation, setInputFocused, nextStep }) => {
+  const { token } = useAuth();
   const { showLoading, hideLoading } = useLoading();
   const baseUserUrl = `${Constants.expoConfig?.extra?.apiUrl}/user/firebase`;
   const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#1C1A14" }, 'background');
@@ -47,23 +47,29 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
 
       if (token) {
         // Nếu đã có token, update user
-        const url = `${baseUserUrl}/${firebaseUserId}`;
+        const url = `${baseUserUrl}/${personalInformation.firebaseId}`;
         response = await axios.put<UserResponseDto>(url, {
           ...personalInformation,
-          phone: phoneNumber, firebaseId: firebaseUserId, isActive: true
+          phone: phoneNumber,
+          isActive: true
         });
       } else {
         // Nếu chưa có token, tạo user mới
         const url = `${baseUserUrl}`;
         response = await axios.post<UserResponseDto>(url, {
           ...personalInformation,
-          phone: phoneNumber, firebaseId: firebaseUserId, isActive: true
+          phone: phoneNumber,
+          isActive: true
         });
       }
 
       if (response?.data) {
-        setPersonalInformation({ ...personalInformation, userId: response.data.id });
-        setToken(response.data.accessToken);
+        setPersonalInformation({ 
+          ...personalInformation, 
+          userId: response.data.id,
+          accessToken: response.data.accessToken 
+        });
+        // Don't set token immediately to avoid auto-redirect, let the registration flow complete first
         nextStep();
       }
     } catch (error) {
@@ -83,7 +89,10 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
           style={styles.input}
           value={personalInformation.fullname}
           onFocus={() => setInputFocused(true)} // Set focus state
-          onBlur={() => setInputFocused(false)} // Clear focus state
+          onBlur={() => {
+            setInputFocused(false); // Clear focus state
+            Keyboard.dismiss(); // Close keyboard
+          }}
         />
 
         <ThemedView style={styles.rowContainer}>
@@ -100,13 +109,15 @@ const PersonalInfoForm: React.FC<Props> = ({ personalInformation, phoneNumber, f
               height: 50,
             }}
             value={personalInformation.birthday}
-            style={[styles.halfWidth]}
+            style={[styles.twoThirdWidth]}
             maxDate={new Date()}
             onValueChange={(value) => setPersonalInformation({ ...personalInformation, birthday: value })} />
-          <ThemedDropdown
-            value={personalInformation.gender}
-            onValueChange={(value) => setPersonalInformation({ ...personalInformation, gender: value })}
-          />
+          <ThemedView style={styles.oneThirdWidth}>
+            <ThemedDropdown
+              value={personalInformation.gender}
+              onValueChange={(value) => setPersonalInformation({ ...personalInformation, gender: value })}
+            />
+          </ThemedView>
         </ThemedView>
       </ThemedView>
 
@@ -139,6 +150,12 @@ const styles = StyleSheet.create({
   },
   halfWidth: {
     flex: 1, // Take up equal space
+  },
+  twoThirdWidth: {
+    flex: 2, // Take up 2/3 of space
+  },
+  oneThirdWidth: {
+    flex: 1, // Take up 1/3 of space
   },
   input: {
     marginBottom: 20,

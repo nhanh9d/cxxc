@@ -9,29 +9,37 @@ import { EventDto } from "@/types/event";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Constants from "expo-constants";
 import { useApi } from "@/contexts/ApiContext";
+import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function AfterCreateScreen() {
   const router = useRouter();
   const navigation = useNavigation();
   const axios = useApi();
+  
+  // Theme colors
+  const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
+  const iconColor = useThemeColor({ light: "#999", dark: "#AAA" }, 'icon');
+  const chevronColor = useThemeColor({ light: "#000", dark: "#FFF" }, 'text');
+  const buttonBgColor = useThemeColor({ light: "#FFF", dark: "#3A3A3A" }, 'background');
+  const borderColor = useThemeColor({ light: "#EEEEEF", dark: "#4A4A4A" }, 'border');
 
   useEffect(() => {
     navigation.setOptions({
       headerLeft: () => (
         <TouchableOpacity onPress={() => router.replace("/(tabs)")} style={{ flexDirection: "row", alignItems: "center" }}>
-          <MaterialIcons name="home" size={24} color="#999" />
+          <MaterialIcons name="home" size={24} color={iconColor} />
           <ThemedText>Về trang chủ</ThemedText>
         </TouchableOpacity>
       ),
       headerTitle: "",
       headerStyle: {
-        backgroundColor: "#FFFCEE",
+        backgroundColor,
         shadowOpacity: 0, // Remove shadow (iOS)
         elevation: 0, // Remove shadow (Android)
         borderBottomWidth: 0, // Remove bottom border
       }
     });
-  }, [navigation]);
+  }, [navigation, backgroundColor, iconColor]);
 
   const { eventId } = useLocalSearchParams();
   const [event, setEvent] = useState<EventDto>();
@@ -76,24 +84,25 @@ export default function AfterCreateScreen() {
   }
 
   return (
-    <ThemedView lightColor="#FFFCEE" style={styles.container}>
-
+    <ThemedView lightColor="#FFFCEE" darkColor="#2B2A27" style={styles.container}>
       <ThemedText type="title" style={{ marginBottom: 24, marginTop: 12 }}>Chuyến đi đã được tạo!</ThemedText>
-      <ThemedView lightColor="#FFFCEE" style={{ flex: 1 }}>
+      <ThemedView lightColor="#FFFCEE" darkColor="#2B2A27" style={{ flex: 1 }}>
         {event && <EventCard item={event} />}
         <TouchableOpacity onPress={() => viewDetail()} style={[styles.viewDetailButton, {
           justifyContent: "space-between",
+          backgroundColor: buttonBgColor,
+          borderColor
         }]}>
           <ThemedText type="default">Xem chi tiết chuyến đi</ThemedText>
-          <MaterialIcons name="chevron-right" size={24} color="#000" />
+          <MaterialIcons name="chevron-right" size={24} color={chevronColor} />
         </TouchableOpacity>
       </ThemedView>
 
-      <ThemedView lightColor="#FFFCEE" style={{ flexDirection: "row", marginBottom: 24, gap: 12 }}>
-        <TouchableOpacity onPress={() => invite()} style={[styles.viewDetailButton, { flex: 1, borderRadius: 100, backgroundColor: "#FFA500" }]}>
+      <ThemedView lightColor="#FFFCEE" darkColor="#2B2A27" style={{ flexDirection: "row", marginBottom: 24, gap: 12 }}>
+        <TouchableOpacity onPress={() => invite()} style={[styles.viewDetailButton, { flex: 1, borderRadius: 100, backgroundColor: "#FFA500", borderColor: "#FFA500" }]}>
           <ThemedText type="defaultSemiBold" style={{ color: "#FFF" }}>Mời bạn bè</ThemedText>
         </TouchableOpacity>
-        <TouchableOpacity onPress={() => share()} style={[styles.viewDetailButton, { flex: 1, borderRadius: 100 }]}>
+        <TouchableOpacity onPress={() => share()} style={[styles.viewDetailButton, { flex: 1, borderRadius: 100, backgroundColor: buttonBgColor, borderColor }]}>
           <ThemedText type="defaultSemiBold">Chia sẻ</ThemedText>
         </TouchableOpacity>
       </ThemedView>
@@ -122,8 +131,6 @@ const styles = StyleSheet.create({
   viewDetailButton: {
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#EEEEEF",
-    backgroundColor: "#FFF",
     display: "flex",
     flexDirection: "row",
     alignItems: "center",
