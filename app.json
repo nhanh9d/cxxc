@@ -10,7 +10,7 @@
       "resizeMode": "contain", // or "cover"
       "backgroundColor": "#ffffff"
     },
-    "scheme": "myapp",
+    "scheme": "cxxc",
     "userInterfaceStyle": "automatic",
     "newArchEnabled": true,
     "jsEngine": "hermes",

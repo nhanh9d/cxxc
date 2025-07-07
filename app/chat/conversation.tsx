@@ -343,20 +343,35 @@ export default function ConversationScreen() {
     router.back()
   }
 
+  const goToChatDetail = () => {
+    router.push({
+      pathname: '/chat/detail',
+      params: {
+        roomId,
+        roomName,
+        username
+      }
+    })
+  }
+
   const renderHeaderLeft = () => (
-    <TouchableOpacity
-      onPress={goBack}
-      style={{ flexDirection: 'row', alignItems: 'center' }}
-    >
-      <MaterialIcons name="chevron-left" size={24} color={COLORS.lightGray} />
-      <Image
-        source={{
-          uri: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face'
-        }}
-        style={styles.messageAvatar}
-      />
-      <ThemedText>{roomName}</ThemedText>
-    </TouchableOpacity>
+    <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+      <TouchableOpacity onPress={goBack} style={{ marginRight: 8 }}>
+        <MaterialIcons name="chevron-left" size={24} color={COLORS.lightGray} />
+      </TouchableOpacity>
+      <TouchableOpacity 
+        onPress={goToChatDetail}
+        style={{ flexDirection: 'row', alignItems: 'center' }}
+      >
+        <Image
+          source={{
+            uri: 'https://images.unsplash.com/photo-1517841905240-472988babdf9?w=150&h=150&fit=crop&crop=face'
+          }}
+          style={styles.messageAvatar}
+        />
+        <ThemedText>{roomName}</ThemedText>
+      </TouchableOpacity>
+    </View>
   )
 
 

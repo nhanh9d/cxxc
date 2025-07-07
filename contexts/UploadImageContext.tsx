@@ -34,43 +34,43 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
   }
 
   const uploadImage = async (props: uploadImageParams) => {
-    if (status?.status !== ImagePicker.PermissionStatus.GRANTED) {
-      const permission = await requestPermission();
-
-      if (!permission.granted) {
-        return;
-      }
-    }
-
-    const result = await ImagePicker.launchImageLibraryAsync({
-      mediaTypes: "images",
-      allowsEditing: true,
-      aspect: props.aspect,
-      quality: 1,
-    });
-
-    if (result.canceled || !result.assets.length) {
-      return; // User canceled the picker
-    }
-
-    showLoading();
-    const image = result.assets[0];
-
-    // Compress image trước khi upload
-    const compressedImageUri = await ImageCompressor.compress(image.uri, {
-      quality: 0.6,
-      maxWidth: 720,
-    });
-
-    const fileName = `${compressedImageUri.split("/").pop()}`;
-    const uploadUrl = await getUploadUrl(fileName, `${userId}`);
-    const fileData = await FileSystem.readAsStringAsync(compressedImageUri, {
-      encoding: FileSystem.EncodingType.Base64,
-    });
-
-    const buffer = Buffer.from(fileData, 'base64');
-
     try {
+      if (status?.status !== ImagePicker.PermissionStatus.GRANTED) {
+        const permission = await requestPermission();
+
+        if (!permission.granted) {
+          return;
+        }
+      }
+
+      const result = await ImagePicker.launchImageLibraryAsync({
+        mediaTypes: "images",
+        allowsEditing: true,
+        aspect: props.aspect,
+        quality: 1,
+      });
+
+      if (result.canceled || !result.assets.length) {
+        return; // User canceled the picker
+      }
+
+      showLoading();
+      const image = result.assets[0];
+
+      // Compress image trước khi upload
+      const compressedImageUri = await ImageCompressor.compress(image.uri, {
+        quality: 0.6,
+        maxWidth: 720,
+      });
+
+      const fileName = `${compressedImageUri.split("/").pop()}`;
+      const uploadUrl = await getUploadUrl(fileName, `${userId}`);
+      const fileData = await FileSystem.readAsStringAsync(compressedImageUri, {
+        encoding: FileSystem.EncodingType.Base64,
+      });
+
+      const buffer = Buffer.from(fileData, 'base64');
+
       await axios.put(
         uploadUrl, // MinIO endpoint
         buffer,
@@ -81,11 +81,13 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
           },
         }
       );
-    } finally {
-      hideLoading();
-    }
 
-    return `${baseFileUrl}/${fileName}`;
+      return `${baseFileUrl}/${fileName}`;
+    } catch (error) {
+      console.error('Upload image error:', error);
+    } finally {
+      hideLoading(); // Always hide loading, even on error
+    }
   }
 
   return (

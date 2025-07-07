@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, ReactNode } from "react";
-import { View, ActivityIndicator, StyleSheet, Modal } from "react-native";
+import { View, ActivityIndicator, StyleSheet, Modal, Text } from "react-native";
 
 interface LoadingContextType {
   isLoading: boolean;
@@ -18,16 +18,18 @@ export const LoadingProvider: React.FC<{ children: React.ReactNode }> = ({ child
   return (
     <LoadingContext.Provider value={{ isLoading, showLoading, hideLoading }}>
       {children}
-      <Modal
-        visible={isLoading}
-        transparent
+      {isLoading && (
+        <Modal
+          visible={isLoading}
+          transparent
         animationType="fade"
         statusBarTranslucent
       >
         <View style={styles.overlay}>
           <ActivityIndicator size="large" color="#999" />
-        </View>
-      </Modal>
+          </View>
+        </Modal>
+      )}
     </LoadingContext.Provider>
   );
 };

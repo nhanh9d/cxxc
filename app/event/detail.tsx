@@ -4,9 +4,9 @@ import {
   TouchableOpacity,
   Image,
   View,
-  Platform,
   Alert,
-  ImageSourcePropType
+  ImageSourcePropType,
+  Modal,
 } from 'react-native'
 import { ThemedText } from '@/components/ui/ThemedText'
 import { useEffect, useState } from 'react'
@@ -23,6 +23,10 @@ import { useLoading } from '@/contexts/LoadingContext'
 import { UserDto } from '@/types/user'
 import { useThemeColor } from '@/hooks/useThemeColor'
 import { ChatRoomDto } from '@/types/chatRoom'
+import QRCode from 'react-native-qrcode-svg'
+import { ThemedView } from '@/components/layout/ThemedView'
+import { ButtonType, ThemedButton } from '@/components/ui/ThemedButton'
+
 export default function DetailScreen() {
   const router = useRouter()
   const navigation = useNavigation()
@@ -75,6 +79,7 @@ export default function DetailScreen() {
   const [rejectedNo, setRejectedNo] = useState<number>(0)
   const [members, setMembers] = useState<EventMember[]>()
   const [chatRoom, setChatRoom] = useState<ChatRoomDto>()
+  const [showQRModal, setShowQRModal] = useState(false)
 
   useEffect(() => {
     const getEventFromApi = async () => {
@@ -148,7 +153,13 @@ export default function DetailScreen() {
     sharedAlert()
   }
   const share = () => {
-    sharedAlert()
+    setShowQRModal(true)
+  }
+
+  const generateShareLink = () => {
+    // Create a deep link using the app scheme from app.json
+    const deepLink = `cxxc://event/detail?eventId=${eventId}`
+    return deepLink
   }
   const notify = () => {
     sharedAlert()
@@ -468,6 +479,50 @@ export default function DetailScreen() {
           </View>
         </>
       )}
+      
+      {/* QR Code Share Modal */}
+      <Modal
+        visible={showQRModal}
+        transparent
+        animationType="fade"
+        onRequestClose={() => setShowQRModal(false)}
+      >
+        <View style={styles.modalOverlay}>
+          <ThemedView style={[styles.qrModalContent, { 
+            backgroundColor: buttonBackgroundColor,
+            borderColor 
+          }]}>
+            <ThemedText type="subtitle" style={{ marginBottom: 20, textAlign: 'center' }}>
+              Chia sẻ hoạt động {event?.name}
+            </ThemedText>
+            
+            <View style={styles.qrContainer}>
+              <QRCode
+                value={generateShareLink()}
+                size={200}
+                backgroundColor="white"
+                color="black"
+              />
+            </View>
+            
+            <ThemedText type="small" style={{ 
+              textAlign: 'center', 
+              marginTop: 16,
+              marginBottom: 20,
+              opacity: 0.7
+            }}>
+              Quét mã QR để xem chi tiết chuyến đi
+            </ThemedText>
+            
+            <ThemedButton
+              title="Đóng"
+              buttonType={ButtonType.primary}
+              onPress={() => setShowQRModal(false)}
+              style={{ marginTop: 10 }}
+            />
+          </ThemedView>
+        </View>
+      </Modal>
     </ThemedScrollView>
   )
 }
@@ -516,5 +571,33 @@ const styles = StyleSheet.create({
   },
   statistic: {
     flex: 1
+  },
+  modalOverlay: {
+    flex: 1,
+    backgroundColor: 'rgba(0, 0, 0, 0.5)',
+    justifyContent: 'center',
+    alignItems: 'center',
+    padding: 20
+  },
+  qrModalContent: {
+    borderRadius: 16,
+    padding: 24,
+    width: '90%',
+    maxWidth: 320,
+    alignItems: 'center',
+    borderWidth: 1
+  },
+  qrContainer: {
+    padding: 16,
+    backgroundColor: 'white',
+    borderRadius: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 4,
+    elevation: 3
   }
 })

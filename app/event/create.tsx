@@ -131,7 +131,7 @@ export default function CreateScreen() {
 
         <ThemedScrollView
           keyboardShouldPersistTaps="handled"
-          lightColor="#FFFCEE" 
+          lightColor="#FFFCEE"
           darkColor="#2B2A27"
         >
           {/* banner */}
@@ -145,12 +145,12 @@ export default function CreateScreen() {
             <ThemedButton
               imageSource={require("../../assets/images/picture-icon.png")}
               imageStyle={{ width: 16, height: 16 }}
-              style={[styles.bannerButton, { 
+              style={[styles.bannerButton, {
                 backgroundColor: buttonBgColor,
                 borderColor: borderColor,
                 borderWidth: 1,
                 borderRadius: 8
-              }]} 
+              }]}
               title="Chọn hình ảnh"
               textStyle={[styles.bannerButtonText, { color: iconColor }]}
               onPress={() => { chooseImage() }} />
@@ -205,15 +205,15 @@ export default function CreateScreen() {
 
         <ThemedButton
           title={isEdit ? "Cập nhật" : "Tạo chuyến đi"}
-          style={{ 
-            backgroundColor: isValid ? "#FF9500" : disabledBgColor, 
+          style={{
+            backgroundColor: isValid ? "#FF9500" : disabledBgColor,
             marginBottom: 24,
             borderRadius: 8,
             paddingVertical: 16,
             borderWidth: 1,
             borderColor: isValid ? "#FF9500" : borderColor
           }}
-          textStyle={{ 
+          textStyle={{
             color: isValid ? "#FFF" : disabledTextColor,
             fontSize: 16,
             fontWeight: "600"
