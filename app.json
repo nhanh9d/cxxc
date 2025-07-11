@@ -87,6 +87,7 @@
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-google-signin/google-signin",
+      "react-native-fbsdk-next",
       [
         "expo-build-properties",
         {
