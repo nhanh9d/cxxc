@@ -1,11 +1,13 @@
-import React, { useEffect } from 'react'
-import { StyleSheet, Image } from 'react-native'
-import signInWithGoogle from './google'
-import { useNavigation, useRouter } from 'expo-router'
 import { ThemedView } from '@/components/layout/ThemedView'
-import { ThemedText } from '@/components/ui/ThemedText'
 import { ThemedButton } from '@/components/ui/ThemedButton'
-import auth, { FirebaseAuthTypes } from '@react-native-firebase/auth'
+import { ThemedText } from '@/components/ui/ThemedText'
+import auth from '@react-native-firebase/auth'
+import { useNavigation, useRouter } from 'expo-router'
+import React, { useEffect } from 'react'
+import { Image, StyleSheet } from 'react-native'
+import signInWithFacebook from './facebook'
+import signInWithGoogle from './google'
+import signInWithApple from './apple'
 
 export default function LoginScreen() {
   const router = useRouter()
@@ -52,7 +54,7 @@ export default function LoginScreen() {
             borderRadius: 100
           }}
           title="Apple"
-          // onPress={() => signInWithApple(auth)}
+          onPress={() => signInWithApple()}
           imageSource={require('../../assets/images/apple-icon.png')}
           imageStyle={{ width: 36, height: 36 }}
         />
@@ -65,7 +67,7 @@ export default function LoginScreen() {
             borderRadius: 100
           }}
           title="Facebook"
-          // onPress={() => signInWithFacebook(auth)}
+          onPress={() => signInWithFacebook()}
           imageSource={require('../../assets/images/facebook-icon.png')}
           imageStyle={{ width: 36, height: 36 }}
         />
