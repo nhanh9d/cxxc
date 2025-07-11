@@ -15,10 +15,22 @@
     "newArchEnabled": true,
     "jsEngine": "hermes",
     "ios": {
+      "usesAppleSignIn": true,
       "googleServicesFile": "./GoogleService-Info.plist",
       "supportsTablet": true,
       "bundleIdentifier": "com.cxxc",
+      "scheme": "cxxc",
       "infoPlist": {
+        "CFBundleURLTypes": [
+          {
+            "CFBundleURLName": "cxxc",
+            "CFBundleURLSchemes": ["cxxc"]
+          },
+          {
+            "CFBundleURLName": "facebook",
+            "CFBundleURLSchemes": ["fb915599720419978"]
+          }
+        ],
         "NSUserTrackingUsageDescription": "This identifier will be used to deliver personalized ads to you.",
         "SKAdNetworkItems": [
           {
@@ -87,7 +99,15 @@
       "@react-native-firebase/app",
       "@react-native-firebase/auth",
       "@react-native-google-signin/google-signin",
-      "react-native-fbsdk-next",
+      "expo-apple-authentication",
+      ["react-native-fbsdk-next",{
+         "appID": "915599720419978",
+          "clientToken": "41db9e330db405dc6900f734dc2c2679",
+          "displayName": "Cxxc",
+          "advertiserIDCollectionEnabled": false,
+          "autoLogAppEventsEnabled": false,
+          "isAutoInitEnabled": true
+      }],
       [
         "expo-build-properties",
         {
