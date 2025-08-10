@@ -10,7 +10,6 @@ import { useApi } from "@/contexts/ApiContext";
 import { Fontisto, MaterialCommunityIcons } from "@expo/vector-icons";
 import { ThemedText } from "@/components/ui/ThemedText";
 import { useAuth } from "@/contexts/AuthContext";
-import { useSnackbar } from "@/contexts/SnackbarContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
 
 export default function IndexScreen() {
@@ -27,7 +26,6 @@ export default function IndexScreen() {
   const backgroundColor = useThemeColor({ light: "#FFFCEE", dark: "#2B2A27" }, 'background');
   const buttonBackgroundColor = useThemeColor({ light: "#FFF", dark: "#3A3A3A" }, 'background');
   const borderColor = useThemeColor({ light: "#EEEEEF", dark: "#4A4A4A" }, 'border');
-  const { showSnackbar } = useSnackbar();
 
   const fetchData = async () => {
     const response = await api.get<EventDto[]>(`${baseEventUrl}?page=${page}&limit=4`);
@@ -44,7 +42,6 @@ export default function IndexScreen() {
   }
 
   useEffect(() => {
-    showSnackbar("Hello", "success", 3000);
     if (token) {
       loadMoreEvents();
       fetchMyRidesCount();
