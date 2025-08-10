@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -20,6 +20,7 @@ type SelectableInputProps = {
   value?: string | number;
   multiline?: boolean; // Determines if textarea or input
   numeric?: boolean; // Determines if input is number
+  postfixLabel?: string;
   onSave: (newValue: string | number) => void;
 };
 
@@ -37,10 +38,16 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
   value,
   multiline = false,
   numeric = false,
+  postfixLabel = "Không giới hạn",
   onSave,
 }) => {
   const [modalVisible, setModalVisible] = useState(false);
   const [inputValue, setInputValue] = useState(value ? value.toString() : ""); // Store as string for input
+  
+  // Update inputValue when value prop changes
+  useEffect(() => {
+    setInputValue(value ? value.toString() : "");
+  }, [value]);
   
   // Theme colors
   const backgroundColor = useThemeColor({ light: "white", dark: "#3A3A3A" }, 'background');
@@ -69,7 +76,7 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
               {label}
             </Text>
             <Text style={[styles.value, { color: textColor }]}>
-              {value ? value : "Không giới hạn"}
+              {value || postfixLabel}
             </Text>
           </View>
           <AntDesign name="right" size={18} color={iconColor} />
@@ -92,7 +99,7 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
                 {label}
               </Text>
               <Text style={{ fontSize: 16, color: textColor, textAlign: "center", marginBottom: 8 }}>
-                Đang chọn: {inputValue || "Không giới hạn"}
+                Đang chọn: {inputValue || postfixLabel}
               </Text>
               <Picker
                 selectedValue={inputValue}
@@ -102,7 +109,7 @@ const SelectableInput: React.FC<SelectableInputProps> = ({
                 }}
                 style={styles.picker}
               >
-                <Picker.Item label="Không giới hạn" value="" />
+                <Picker.Item label={postfixLabel} value="" />
                 {Array.from({ length: 20 }, (_, i) => i + 1).map((num) => (
                   <Picker.Item key={num} label={num.toString()} value={num.toString()} />
                 ))}
@@ -204,6 +211,9 @@ const styles = StyleSheet.create({
   },
   textContainer: {
     flex: 1,
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
   label: {
     fontSize: 16,

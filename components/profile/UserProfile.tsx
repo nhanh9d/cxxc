@@ -14,6 +14,8 @@ export default function UserProfile({ user }: UserProfileProps) {
   const imageSize = (screenWidth - 2 * 20 - (numColumns - 1) * imageMargin) / numColumns;
 
   const getAge = (birthday: string) => {
+    if (!birthday) return '';
+
     const today = new Date();
     const age = today.getFullYear() - new Date(birthday).getFullYear();
     return age;

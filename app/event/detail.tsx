@@ -1,4 +1,4 @@
-import { useLocalSearchParams, useNavigation, useRouter } from 'expo-router'
+import { useLocalSearchParams, useNavigation, useRouter, useFocusEffect } from 'expo-router'
 import {
   StyleSheet,
   TouchableOpacity,
@@ -10,7 +10,7 @@ import {
 } from 'react-native'
 import { ThemedText } from '@/components/ui/ThemedText'
 import { useEffect, useState } from 'react'
-import { EventDto, EventMember, EventStatistic } from '@/types/event'
+import { EventDto, EventMember, EventMemberStatus, EventStatistic, EventTarget } from '@/types/event'
 import { MaterialCommunityIcons, MaterialIcons } from '@expo/vector-icons'
 import Constants from 'expo-constants'
 import { formattedDate } from '@/helpers/date'
@@ -77,12 +77,14 @@ export default function DetailScreen() {
   const [event, setEvent] = useState<EventDto>()
   const [invitedNo, setInvitedNo] = useState<number>(0)
   const [rejectedNo, setRejectedNo] = useState<number>(0)
+  const [confirmedNo, setConfirmedNo] = useState<number>(0)
+  const [pendingNo, setPendingNo] = useState<number>(0)
   const [members, setMembers] = useState<EventMember[]>()
   const [chatRoom, setChatRoom] = useState<ChatRoomDto>()
   const [showQRModal, setShowQRModal] = useState(false)
 
-  useEffect(() => {
-    const getEventFromApi = async () => {
+  const getEventFromApi = async () => {
+    try {
       const statisticUri = `${Constants.expoConfig?.extra?.apiUrl}/event/${eventId}/statistic`
       const response = await axios.get<EventStatistic>(statisticUri)
 
@@ -96,11 +98,24 @@ export default function DetailScreen() {
         setRejectedNo(response.data.rejectedNo)
         setMembers(response.data.event.members)
         setChatRoom(response.data.chatRoom)
+        setConfirmedNo(response.data.event.members?.filter((m) => m.status === EventMemberStatus.CONFIRMED).length || 0)
+        setPendingNo(response.data.event.members?.filter((m) => m.status === EventMemberStatus.REGISTERED || m.status === EventMemberStatus.INVITED).length || 0)
       }
+    } catch (error) {
+      console.error('Error fetching event statistics:', error)
     }
+  }
 
+  useEffect(() => {
     getEventFromApi()
   }, [])
+
+  // Refetch data when screen comes into focus (returning from member pages)
+  useFocusEffect(
+    React.useCallback(() => {
+      getEventFromApi()
+    }, [eventId])
+  )
 
   //check is creator
   const [isCreator, setIsCreator] = useState(false)
@@ -204,10 +219,10 @@ export default function DetailScreen() {
   const imageSource = (user?: UserDto): ImageSourcePropType =>
     user?.profileImages?.[0]
       ? {
-          uri: user.profileImages[0].includes(config?.fileUrl)
-            ? user.profileImages[0]
-            : `${config?.fileUrl}/${user.profileImages[0]}`
-        }
+        uri: user.profileImages[0].includes(config?.fileUrl)
+          ? user.profileImages[0]
+          : `${config?.fileUrl}/${user.profileImages[0]}`
+      }
       : require('../../assets/images/banner-placeholder.png')
 
   return (
@@ -216,10 +231,10 @@ export default function DetailScreen() {
         source={
           event?.banner
             ? {
-                uri: event.banner.includes(config?.fileUrl)
-                  ? event.banner
-                  : `${config?.fileUrl}/${event.banner}`
-              }
+              uri: event.banner.includes(config?.fileUrl)
+                ? event.banner
+                : `${config?.fileUrl}/${event.banner}`
+            }
             : require('../../assets/images/banner-placeholder.png')
         }
         style={{
@@ -256,7 +271,7 @@ export default function DetailScreen() {
             {event?.endDate ? formattedDate(event.endDate) : ''}
           </ThemedText>
         </View>
-        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+        <View style={{ flexDirection: 'row', alignItems: 'center', marginBottom: 8 }}>
           <MaterialCommunityIcons
             size={16}
             name="map-marker-radius-outline"
@@ -265,70 +280,134 @@ export default function DetailScreen() {
           />
           <ThemedText type="default">{event?.startLocation}</ThemedText>
         </View>
+        <View style={{ flexDirection: 'row', alignItems: 'center' }}>
+          <MaterialIcons
+            size={16}
+            name={event?.target === EventTarget.PRIVATE ? "lock" : "public"}
+            color="#8A8A8E"
+            style={{ marginRight: 4 }}
+          />
+          <ThemedText type="default">
+            {event?.target === EventTarget.PRIVATE ? "Riêng tư" : "Công khai"}
+          </ThemedText>
+        </View>
       </View>
 
-      <View
-        style={{
-          flexDirection: 'row',
-          justifyContent: 'space-between',
-          gap: 8,
-          marginBottom: 24
-        }}
-      >
-        {isCreator && (
-          <TouchableOpacity
-            onPress={() => invite()}
-            style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+      {(isCreator || joined) && (
+        <View style={{ marginBottom: 24 }}>
+          <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Quản lý</ThemedText>
+          <View
+            style={{
+              flexDirection: 'row',
+              flexWrap: 'wrap',
+              gap: 8,
+              marginTop: 12
+            }}
           >
-            <MaterialIcons
-              style={{ marginBottom: 8 }}
-              name="person-add-alt"
-              size={24}
-              color="#8A8A8E"
-            />
-            <ThemedText type="body2Regular">Mời bạn bè</ThemedText>
-          </TouchableOpacity>
-        )}
-        {isCreator && (
-          <TouchableOpacity
-            onPress={() => notify()}
-            style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-          >
-            <MaterialIcons
-              style={{ marginBottom: 8 }}
-              name="notifications"
-              size={24}
-              color="#8A8A8E"
-            />
-            <ThemedText type="body2Regular">Thông báo</ThemedText>
-          </TouchableOpacity>
-        )}
-        {!isCreator && (
-          <TouchableOpacity
-            onPress={() => (joined ? void 0 : register())}
-            style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-          >
-            <MaterialIcons
-              style={{ marginBottom: 8 }}
-              name={joined ? 'check-circle' : 'group-add'}
-              size={24}
-              color={joined ? '#34C759' : '#8A8A8E'}
-            />
-            <ThemedText type="body2Regular">
-              {joined ? 'Đã ' : ''}Đăng ký
-            </ThemedText>
-          </TouchableOpacity>
-        )}
-        <TouchableOpacity onPress={() => share()} style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}>
-          <MaterialIcons
-            style={{ marginBottom: 8 }}
-            name="share"
-            size={24}
-            color="#8A8A8E"
-          />
-          <ThemedText type="body2Regular">Chia sẻ</ThemedText>
-        </TouchableOpacity>
-      </View>
+            {isCreator && (
+              <TouchableOpacity
+                onPress={() => router.push({
+                  pathname: '/event/pending-members',
+                  params: { eventId }
+                })}
+                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+              >
+                <View style={styles.badgeContainer}>
+                  <View style={styles.badge}>
+                    <ThemedText style={styles.badgeText}>{pendingNo}</ThemedText>
+                  </View>
+                </View>
+                <ThemedText type="body2Regular" style={styles.actionButtonText}>Chờ duyệt</ThemedText>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => router.push({
+                pathname: '/event/confirmed-members',
+                params: { eventId }
+              })}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <View style={styles.badgeContainer}>
+                <View style={[styles.badge, { backgroundColor: '#8A8A8E', width: 40 }]}>
+                  <ThemedText style={styles.badgeText}>{confirmedNo}/{event?.size || 20}</ThemedText>
+                </View>
+              </View>
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Đã tham gia</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => invite()}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <MaterialIcons
+                name="person-add-alt"
+                size={24}
+                color="#8A8A8E"
+              />
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Mời bạn bè</ThemedText>
+            </TouchableOpacity>
+            {isCreator && (
+              <TouchableOpacity
+                onPress={() => edit()}
+                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+              >
+                <MaterialIcons
+                  name="edit"
+                  size={24}
+                  color="#8A8A8E"
+                />
+                <ThemedText type="body2Regular" style={styles.actionButtonText}>Chỉnh sửa</ThemedText>
+              </TouchableOpacity>
+            )}
+            <TouchableOpacity
+              onPress={() => chat()}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <MaterialCommunityIcons
+                name="message-text"
+                size={24}
+                color="#8A8A8E"
+              />
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Chat chung</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => share()}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <MaterialIcons
+                name="share"
+                size={24}
+                color="#8A8A8E"
+              />
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Chia sẻ</ThemedText>
+            </TouchableOpacity>
+            {isCreator ? (
+              <TouchableOpacity
+                onPress={() => remove()}
+                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+              >
+                <MaterialIcons
+                  name="close"
+                  size={24}
+                  color="#FF3B30"
+                />
+                <ThemedText type="body2Regular" style={[styles.actionButtonText, { color: '#FF3B30' }]}>Hủy</ThemedText>
+              </TouchableOpacity>
+            ) : joined && (
+              <TouchableOpacity
+                onPress={() => unjoin()}
+                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+              >
+                <MaterialIcons
+                  name="output"
+                  size={24}
+                  color="#FF3B30"
+                />
+                <ThemedText type="body2Regular" style={[styles.actionButtonText, { color: '#FF3B30' }]}>Hủy tham gia</ThemedText>
+              </TouchableOpacity>
+            )}
+          </View>
+        </View>
+      )}
 
       <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Thống kê thành viên</ThemedText>
       <View
@@ -339,17 +418,17 @@ export default function DetailScreen() {
           marginBottom: 24
         }}
       >
-        <View style={[styles.statistic, { backgroundColor: buttonBackgroundColor, borderColor, borderWidth: 1, borderRadius: 12, padding: 16 }]}>
-          <ThemedText type="subtitleSemiBold">{members?.length}</ThemedText>
-          <ThemedText type="body2Regular">Thành viên</ThemedText>
+        <View style={styles.statistic}>
+          <ThemedText type="subtitle" style={{ fontSize: 20, fontWeight: '600' }}>{members?.length || 0}</ThemedText>
+          <ThemedText type="small" style={{ color: '#8A8A8E', marginTop: 4 }}>Thành viên</ThemedText>
         </View>
-        <View style={[styles.statistic, { backgroundColor: buttonBackgroundColor, borderColor, borderWidth: 1, borderRadius: 12, padding: 16 }]}>
-          <ThemedText type="subtitleSemiBold">{invitedNo}</ThemedText>
-          <ThemedText type="body2Regular">Đã mời</ThemedText>
+        <View style={styles.statistic}>
+          <ThemedText type="subtitle" style={{ fontSize: 20, fontWeight: '600' }}>{invitedNo || 0}</ThemedText>
+          <ThemedText type="small" style={{ color: '#8A8A8E', marginTop: 4 }}>Đã mời</ThemedText>
         </View>
-        <View style={[styles.statistic, { backgroundColor: buttonBackgroundColor, borderColor, borderWidth: 1, borderRadius: 12, padding: 16 }]}>
-          <ThemedText type="subtitleSemiBold">{rejectedNo}</ThemedText>
-          <ThemedText type="body2Regular">Không tham gia</ThemedText>
+        <View style={styles.statistic}>
+          <ThemedText type="subtitle" style={{ fontSize: 20, fontWeight: '600' }}>{rejectedNo || 0}</ThemedText>
+          <ThemedText type="small" style={{ color: '#8A8A8E', marginTop: 4 }}>Không tham gia</ThemedText>
         </View>
       </View>
 
@@ -407,79 +486,6 @@ export default function DetailScreen() {
         <ThemedText type="default">{event?.description}</ThemedText>
       </View>
 
-      {(isCreator || joined) && (
-        <>
-          <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Quản lý</ThemedText>
-          <View
-            style={{
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              gap: 8,
-              marginBottom: 24
-            }}
-          >
-            {isCreator && (
-              <TouchableOpacity
-                onPress={() => edit()}
-                style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <MaterialIcons
-                  style={{ marginBottom: 8 }}
-                  name="mode-edit"
-                  size={24}
-                  color="#8A8A8E"
-                />
-                <ThemedText type="body2Regular">Chỉnh sửa thông tin</ThemedText>
-              </TouchableOpacity>
-            )}
-            <TouchableOpacity
-              onPress={() => chat()}
-              style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-            >
-              <MaterialIcons
-                style={{ marginBottom: 8 }}
-                name="chat-bubble-outline"
-                size={24}
-                color="#8A8A8E"
-              />
-              <ThemedText type="body2Regular">Hội thoại chung</ThemedText>
-            </TouchableOpacity>
-            {isCreator && (
-              <TouchableOpacity
-                onPress={() => remove()}
-                style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <MaterialIcons
-                  style={{ marginBottom: 8 }}
-                  name="delete-outline"
-                  size={24}
-                  color="#FF3B30"
-                />
-                <ThemedText type="body2Regular" style={{ color: '#FF3B30' }}>
-                  Huỷ chuyến đi
-                </ThemedText>
-              </TouchableOpacity>
-            )}
-            {joined && !isCreator && (
-              <TouchableOpacity
-                onPress={() => unjoin()}
-                style={[styles.actionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <MaterialIcons
-                  style={{ marginBottom: 8 }}
-                  name="output"
-                  size={24}
-                  color="#FF3B30"
-                />
-                <ThemedText type="body2Regular" style={{ color: '#FF3B30' }}>
-                  Huỷ tham gia
-                </ThemedText>
-              </TouchableOpacity>
-            )}
-          </View>
-        </>
-      )}
-      
       {/* QR Code Share Modal */}
       <Modal
         visible={showQRModal}
@@ -488,14 +494,14 @@ export default function DetailScreen() {
         onRequestClose={() => setShowQRModal(false)}
       >
         <View style={styles.modalOverlay}>
-          <ThemedView style={[styles.qrModalContent, { 
+          <ThemedView style={[styles.qrModalContent, {
             backgroundColor: buttonBackgroundColor,
-            borderColor 
+            borderColor
           }]}>
             <ThemedText type="subtitle" style={{ marginBottom: 20, textAlign: 'center' }}>
               Chia sẻ hoạt động {event?.name}
             </ThemedText>
-            
+
             <View style={styles.qrContainer}>
               <QRCode
                 value={generateShareLink()}
@@ -504,16 +510,16 @@ export default function DetailScreen() {
                 color="black"
               />
             </View>
-            
-            <ThemedText type="small" style={{ 
-              textAlign: 'center', 
+
+            <ThemedText type="small" style={{
+              textAlign: 'center',
               marginTop: 16,
               marginBottom: 20,
               opacity: 0.7
             }}>
               Quét mã QR để xem chi tiết chuyến đi
             </ThemedText>
-            
+
             <ThemedButton
               title="Đóng"
               buttonType={ButtonType.primary}
@@ -560,6 +566,35 @@ const styles = StyleSheet.create({
     borderRadius: 12,
     borderWidth: 1
   },
+  gridActionButton: {
+    width: '31.5%',
+    padding: 12,
+    borderRadius: 8,
+    borderWidth: 1,
+    justifyContent: 'center',
+    minHeight: 80
+  },
+  actionButtonText: {
+    fontSize: 12,
+    marginTop: 8,
+  },
+  badgeContainer: {
+    position: 'relative'
+  },
+  badge: {
+    backgroundColor: '#FF3B30',
+    borderRadius: 10,
+    width: 20,
+    height: 20,
+    alignItems: 'center',
+    justifyContent: 'center',
+    paddingHorizontal: 4
+  },
+  badgeText: {
+    color: 'white',
+    fontSize: 11,
+    fontWeight: '600'
+  },
   subtitle: {
     color: '#8A8A8E',
     fontSize: 14,
@@ -570,7 +605,9 @@ const styles = StyleSheet.create({
     marginBottom: 12
   },
   statistic: {
-    flex: 1
+    flex: 1,
+    paddingVertical: 16,
+    paddingHorizontal: 8
   },
   modalOverlay: {
     flex: 1,

@@ -34,7 +34,7 @@ export function EventCard({ item, showMemberNo = false }: EventCardProp) {
     <TouchableOpacity onPress={() => goDetail(item)}>
       <View style={[styles.card, { backgroundColor: cardBackgroundColor, borderColor }]}>
         <View style={{ position: "relative" }}>
-          <Image source={{ uri: item.banner?.includes(config?.fileUrl) ? item.banner : `${config?.fileUrl}/${item.banner}` }} width={16} style={styles.image} />
+          <Image source={{ uri: config?.fileUrl && item.banner?.includes(config?.fileUrl) ? item.banner : `${config?.fileUrl}/${item.banner}` }} width={16} style={styles.image} />
           {showMemberNo && <View style={[styles.memberNo, { backgroundColor: memberNoBgColor, borderColor: memberNoBorderColor }]}>
             <IconSymbol name="person.2" color={iconSymbolColor} />
             <ThemedText type="small" style={{ color: iconSymbolColor }}>{item.members?.length}/{item.size ? item.size : "Không giới hạn"}</ThemedText>
@@ -44,7 +44,7 @@ export function EventCard({ item, showMemberNo = false }: EventCardProp) {
           <ThemedText style={styles.title}>{item.name}</ThemedText>
           <View style={{ flexDirection: "row" }}>
             {item.creator?.profileImages?.[0]
-              ? <Image source={{ uri: item.creator?.profileImages[0].includes(config?.fileUrl) ? item.creator?.profileImages[0] : `${config?.fileUrl}/${item.creator?.profileImages[0]}` }} style={{ width: 16, height: 16, resizeMode: "center", borderRadius: 100, marginRight: 4 }} />
+              ? <Image source={{ uri: config?.fileUrl && item.creator?.profileImages[0].includes(config?.fileUrl) ? item.creator?.profileImages[0] : `${config?.fileUrl}/${item.creator?.profileImages[0]}` }} style={{ width: 16, height: 16, resizeMode: "center", borderRadius: 100, marginRight: 4 }} />
               : <IconSymbol size={16} name="person" color={iconColor} style={{ marginRight: 4 }} />}
             <ThemedText style={styles.subText}>Tổ chức bởi {item.creator?.fullname}</ThemedText>
           </View>

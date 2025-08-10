@@ -5,7 +5,7 @@ import auth from '@react-native-firebase/auth'
 import { useNavigation, useRouter } from 'expo-router'
 import React, { useEffect } from 'react'
 import { Image, StyleSheet } from 'react-native'
-import signInWithFacebook from './facebook'
+// import signInWithFacebook from './facebook'
 import signInWithGoogle from './google'
 import signInWithApple from './apple'
 
@@ -67,7 +67,7 @@ export default function LoginScreen() {
             borderRadius: 100
           }}
           title="Facebook"
-          onPress={() => signInWithFacebook()}
+          // onPress={() => signInWithFacebook()}
           imageSource={require('../../assets/images/facebook-icon.png')}
           imageStyle={{ width: 36, height: 36 }}
         />

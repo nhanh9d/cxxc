@@ -7,14 +7,16 @@ import { useImageUpload } from "@/contexts/UploadImageContext";
 import { ThemedInput } from "@/components/inputs/ThemedInput";
 import { DateRangePicker } from "@/components/inputs/DateRangePicker";
 import { useEffect, useState } from "react";
-import { EventDto } from "@/types/event";
+import { EventDto, EventTarget } from "@/types/event";
 import SelectableInput from "@/components/inputs/SelectableInput";
+import { ThemedRadioSelector, RadioOption } from "@/components/inputs/ThemedRadioSelector";
 import { MaterialIcons } from "@expo/vector-icons";
 import { ThemedScrollView } from "@/components/layout/ThemedScrollView";
 import Constants from "expo-constants";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { useApi } from "@/contexts/ApiContext";
 import { useThemeColor } from "@/hooks/useThemeColor";
+
 export default function CreateScreen() {
   const router = useRouter();
   const axios = useApi();
@@ -52,7 +54,7 @@ export default function CreateScreen() {
     }
   }
 
-  const [event, setEvent] = useState<EventDto>({ startDate: new Date() });
+  const [event, setEvent] = useState<EventDto>({ startDate: new Date(), target: EventTarget.PUBLIC });
   const [isValid, setIsValid] = useState(false);
   const [isEdit, setIsEdit] = useState(false);
   const { eventId } = useLocalSearchParams();
@@ -124,6 +126,21 @@ export default function CreateScreen() {
     return today;
   }
 
+  const targetOptions: RadioOption<EventTarget>[] = [
+    {
+      value: EventTarget.PUBLIC,
+      label: 'Công khai',
+      description: 'Hiển thị chuyến đi với tất cả mọi người',
+      icon: <MaterialIcons name="public" size={24} color={iconColor} />
+    },
+    {
+      value: EventTarget.PRIVATE,
+      label: 'Riêng tư',
+      description: 'Chỉ hiển thị với những người được mời',
+      icon: <MaterialIcons name="lock" size={24} color={iconColor} />
+    }
+  ];
+
   return (
     <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
       <ThemedView style={styles.container} lightColor="#FFFCEE" darkColor="#2B2A27">
@@ -134,6 +151,22 @@ export default function CreateScreen() {
           lightColor="#FFFCEE"
           darkColor="#2B2A27"
         >
+          <ThemedView style={{ marginBottom: 12 }} lightColor="#FFFCEE" darkColor="#2B2A27">
+            <ThemedRadioSelector<EventTarget>
+              icon={
+                event?.target === EventTarget.PRIVATE 
+                  ? <MaterialIcons name="lock" size={24} color={iconColor} />
+                  : <MaterialIcons name="public" size={24} color={iconColor} />
+              }
+              label="Đối tượng"
+              value={event?.target}
+              options={targetOptions}
+              onSelect={(value) => setEvent({ ...event, target: value })}
+              modalTitle="Chọn đối tượng"
+              modalDescription="Ai có thể nhìn thấy và đăng ký chuyến trip của bạn ?"
+            />
+          </ThemedView>
+
           {/* banner */}
           <ThemedView style={styles.banner} lightColor="#FFFCEE" darkColor="#2B2A27">
             <Image

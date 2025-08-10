@@ -1,5 +1,18 @@
 import { UserDto } from "./user";
 import { ChatRoomDto } from "./chatRoom";
+
+export enum EventTarget {
+  PUBLIC = 'PUBLIC',
+  PRIVATE = 'PRIVATE'
+}
+
+export enum EventMemberStatus {
+  REGISTERED,
+  INVITED,
+  CONFIRMED,
+  REJECTED,
+}
+
 export type EventDto = {
   id?: number;
   name?: string;
@@ -12,6 +25,7 @@ export type EventDto = {
   members?: EventMember[],
   creator?: UserDto;
   rules?: EventRuleDto[];
+  target?: EventTarget;
 }
 
 export type EventRuleDto = {
@@ -21,6 +35,8 @@ export type EventRuleDto = {
 
 export type EventMember = {
   user: UserDto,
+  status: EventMemberStatus,
+  registeredAt?: Date,
 }
 
 export type EventStatistic = {

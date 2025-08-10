@@ -8,6 +8,7 @@ import { ApiProvider } from '@/contexts/ApiContext';
 import { ImageUploadProvider } from '@/contexts/UploadImageContext';
 import { ConfigProvider } from '@/contexts/ConfigContext';
 import { LoadingProvider } from "@/contexts/LoadingContext";
+import { SnackbarProvider } from "@/contexts/SnackbarContext";
 
 export const Providers: React.FC<{ children: React.ReactNode }> = ({ children }) => {
   const colorScheme = useColorScheme();
@@ -20,6 +21,7 @@ export const Providers: React.FC<{ children: React.ReactNode }> = ({ children })
     [ApiProvider],
     [ConfigProvider],
     [ImageUploadProvider],
+    [SnackbarProvider],
   ];
 
   const wrappedChildren = providers.reduceRight((acc, [Provider, props]) => {
