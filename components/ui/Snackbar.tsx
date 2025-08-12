@@ -87,7 +87,7 @@ export const Snackbar: React.FC<SnackbarProps> = ({
     })
   }
 
-  if (!visible && translateY._value === -100) {
+  if (!visible && translateY._value === 100) {
     return null
   }
 
