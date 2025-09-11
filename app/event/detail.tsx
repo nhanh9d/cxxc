@@ -386,17 +386,19 @@ export default function DetailScreen() {
               />
               <ThemedText type="body2Regular" style={styles.actionButtonText}>Chia sẻ</ThemedText>
             </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => register()}
-              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-            >
-              <MaterialIcons
-                name="person-add-alt"
-                size={24}
-                color="#8A8A8E"
-              />
-              <ThemedText type="body2Regular" style={styles.actionButtonText}>Đăng ký</ThemedText>
-            </TouchableOpacity>
+            {!joined && (
+              <TouchableOpacity
+                onPress={() => register()}
+                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+              >
+                <MaterialIcons
+                  name="person-add-alt"
+                  size={24}
+                  color="#8A8A8E"
+                />
+                <ThemedText type="body2Regular" style={styles.actionButtonText}>Đăng ký</ThemedText>
+              </TouchableOpacity>
+            )}
             {isCreator ? (
               <TouchableOpacity
                 onPress={() => remove()}
