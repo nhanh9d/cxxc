@@ -164,9 +164,11 @@ export default function DetailScreen() {
       hideLoading()
     }
   }
+
   const invite = () => {
     sharedAlert()
   }
+
   const share = () => {
     setShowQRModal(true)
   }
@@ -320,31 +322,35 @@ export default function DetailScreen() {
                 <ThemedText type="body2Regular" style={styles.actionButtonText}>Chờ duyệt</ThemedText>
               </TouchableOpacity>
             )}
-            <TouchableOpacity
-              onPress={() => router.push({
-                pathname: '/event/confirmed-members',
-                params: { eventId }
-              })}
-              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-            >
-              <View style={styles.badgeContainer}>
-                <View style={[styles.badge, { backgroundColor: '#8A8A8E', width: 40 }]}>
-                  <ThemedText style={styles.badgeText}>{confirmedNo}/{event?.size || 20}</ThemedText>
+            {isCreator && (
+              <TouchableOpacity
+                onPress={() => router.push({
+                  pathname: '/event/confirmed-members',
+                  params: { eventId }
+                })}
+                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+              >
+                <View style={styles.badgeContainer}>
+                  <View style={[styles.badge, { backgroundColor: '#8A8A8E', width: 40 }]}>
+                    <ThemedText style={styles.badgeText}>{confirmedNo}/{event?.size || 20}</ThemedText>
+                  </View>
                 </View>
-              </View>
-              <ThemedText type="body2Regular" style={styles.actionButtonText}>Đã tham gia</ThemedText>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => invite()}
-              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-            >
-              <MaterialIcons
-                name="person-add-alt"
-                size={24}
-                color="#8A8A8E"
-              />
-              <ThemedText type="body2Regular" style={styles.actionButtonText}>Mời bạn bè</ThemedText>
-            </TouchableOpacity>
+                <ThemedText type="body2Regular" style={styles.actionButtonText}>Đã tham gia</ThemedText>
+              </TouchableOpacity>
+            )}
+            {joined && (
+              <TouchableOpacity
+                onPress={() => invite()}
+                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+              >
+                <MaterialIcons
+                  name="person-add-alt"
+                  size={24}
+                  color="#8A8A8E"
+                />
+                <ThemedText type="body2Regular" style={styles.actionButtonText}>Mời bạn bè</ThemedText>
+              </TouchableOpacity>
+            )}
             {isCreator && (
               <TouchableOpacity
                 onPress={() => edit()}
@@ -379,6 +385,17 @@ export default function DetailScreen() {
                 color="#8A8A8E"
               />
               <ThemedText type="body2Regular" style={styles.actionButtonText}>Chia sẻ</ThemedText>
+            </TouchableOpacity>
+            <TouchableOpacity
+              onPress={() => register()}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <MaterialIcons
+                name="person-add-alt"
+                size={24}
+                color="#8A8A8E"
+              />
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Đăng ký</ThemedText>
             </TouchableOpacity>
             {isCreator ? (
               <TouchableOpacity
