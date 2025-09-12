@@ -82,11 +82,11 @@ export const ImageUploadProvider: React.FC<{ children: React.ReactNode }> = ({ c
         }
       );
 
+      hideLoading();
       return `${baseFileUrl}/${fileName}`;
     } catch (error) {
       console.error('Upload image error:', error);
-    } finally {
-      hideLoading(); // Always hide loading, even on error
+      hideLoading();
     }
   }
 
