@@ -295,75 +295,75 @@ export default function DetailScreen() {
         </View>
       </View>
 
-      {(isCreator || joined) && (
-        <View style={{ marginBottom: 24 }}>
-          <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Quản lý</ThemedText>
-          <View
-            style={{
-              flexDirection: 'row',
-              flexWrap: 'wrap',
-              gap: 8,
-              marginTop: 12
-            }}
-          >
-            {isCreator && (
-              <TouchableOpacity
-                onPress={() => router.push({
-                  pathname: '/event/pending-members',
-                  params: { eventId }
-                })}
-                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <View style={styles.badgeContainer}>
-                  <View style={styles.badge}>
-                    <ThemedText style={styles.badgeText}>{pendingNo}</ThemedText>
-                  </View>
+      <View style={{ marginBottom: 24 }}>
+        <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Quản lý</ThemedText>
+        <View
+          style={{
+            flexDirection: 'row',
+            flexWrap: 'wrap',
+            gap: 8,
+            marginTop: 12
+          }}
+        >
+          {isCreator && (
+            <TouchableOpacity
+              onPress={() => router.push({
+                pathname: '/event/pending-members',
+                params: { eventId }
+              })}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <View style={styles.badgeContainer}>
+                <View style={styles.badge}>
+                  <ThemedText style={styles.badgeText}>{pendingNo}</ThemedText>
                 </View>
-                <ThemedText type="body2Regular" style={styles.actionButtonText}>Chờ duyệt</ThemedText>
-              </TouchableOpacity>
-            )}
-            {isCreator && (
-              <TouchableOpacity
-                onPress={() => router.push({
-                  pathname: '/event/confirmed-members',
-                  params: { eventId }
-                })}
-                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <View style={styles.badgeContainer}>
-                  <View style={[styles.badge, { backgroundColor: '#8A8A8E', width: 40 }]}>
-                    <ThemedText style={styles.badgeText}>{confirmedNo}/{event?.size || 20}</ThemedText>
-                  </View>
+              </View>
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Chờ duyệt</ThemedText>
+            </TouchableOpacity>
+          )}
+          {isCreator && (
+            <TouchableOpacity
+              onPress={() => router.push({
+                pathname: '/event/confirmed-members',
+                params: { eventId }
+              })}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <View style={styles.badgeContainer}>
+                <View style={[styles.badge, { backgroundColor: '#8A8A8E', width: 40 }]}>
+                  <ThemedText style={styles.badgeText}>{confirmedNo}/{event?.size || 20}</ThemedText>
                 </View>
-                <ThemedText type="body2Regular" style={styles.actionButtonText}>Đã tham gia</ThemedText>
-              </TouchableOpacity>
-            )}
-            {joined && (
-              <TouchableOpacity
-                onPress={() => invite()}
-                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <MaterialIcons
-                  name="person-add-alt"
-                  size={24}
-                  color="#8A8A8E"
-                />
-                <ThemedText type="body2Regular" style={styles.actionButtonText}>Mời bạn bè</ThemedText>
-              </TouchableOpacity>
-            )}
-            {isCreator && (
-              <TouchableOpacity
-                onPress={() => edit()}
-                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <MaterialIcons
-                  name="edit"
-                  size={24}
-                  color="#8A8A8E"
-                />
-                <ThemedText type="body2Regular" style={styles.actionButtonText}>Chỉnh sửa</ThemedText>
-              </TouchableOpacity>
-            )}
+              </View>
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Đã tham gia</ThemedText>
+            </TouchableOpacity>
+          )}
+          {joined && (
+            <TouchableOpacity
+              onPress={() => invite()}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <MaterialIcons
+                name="person-add-alt"
+                size={24}
+                color="#8A8A8E"
+              />
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Mời bạn bè</ThemedText>
+            </TouchableOpacity>
+          )}
+          {isCreator && (
+            <TouchableOpacity
+              onPress={() => edit()}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <MaterialIcons
+                name="edit"
+                size={24}
+                color="#8A8A8E"
+              />
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Chỉnh sửa</ThemedText>
+            </TouchableOpacity>
+          )}
+          {joined && (
             <TouchableOpacity
               onPress={() => chat()}
               style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
@@ -375,58 +375,58 @@ export default function DetailScreen() {
               />
               <ThemedText type="body2Regular" style={styles.actionButtonText}>Chat chung</ThemedText>
             </TouchableOpacity>
+          )}
+          <TouchableOpacity
+            onPress={() => share()}
+            style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+          >
+            <MaterialIcons
+              name="share"
+              size={24}
+              color="#8A8A8E"
+            />
+            <ThemedText type="body2Regular" style={styles.actionButtonText}>Chia sẻ</ThemedText>
+          </TouchableOpacity>
+          {!joined && (
             <TouchableOpacity
-              onPress={() => share()}
+              onPress={() => register()}
               style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
             >
               <MaterialIcons
-                name="share"
+                name="person-add-alt"
                 size={24}
                 color="#8A8A8E"
               />
-              <ThemedText type="body2Regular" style={styles.actionButtonText}>Chia sẻ</ThemedText>
+              <ThemedText type="body2Regular" style={styles.actionButtonText}>Đăng ký</ThemedText>
             </TouchableOpacity>
-            {!joined && (
-              <TouchableOpacity
-                onPress={() => register()}
-                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <MaterialIcons
-                  name="person-add-alt"
-                  size={24}
-                  color="#8A8A8E"
-                />
-                <ThemedText type="body2Regular" style={styles.actionButtonText}>Đăng ký</ThemedText>
-              </TouchableOpacity>
-            )}
-            {isCreator ? (
-              <TouchableOpacity
-                onPress={() => remove()}
-                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <MaterialIcons
-                  name="close"
-                  size={24}
-                  color="#FF3B30"
-                />
-                <ThemedText type="body2Regular" style={[styles.actionButtonText, { color: '#FF3B30' }]}>Hủy</ThemedText>
-              </TouchableOpacity>
-            ) : joined && (
-              <TouchableOpacity
-                onPress={() => unjoin()}
-                style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
-              >
-                <MaterialIcons
-                  name="output"
-                  size={24}
-                  color="#FF3B30"
-                />
-                <ThemedText type="body2Regular" style={[styles.actionButtonText, { color: '#FF3B30' }]}>Hủy tham gia</ThemedText>
-              </TouchableOpacity>
-            )}
-          </View>
+          )}
+          {isCreator ? (
+            <TouchableOpacity
+              onPress={() => remove()}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <MaterialIcons
+                name="close"
+                size={24}
+                color="#FF3B30"
+              />
+              <ThemedText type="body2Regular" style={[styles.actionButtonText, { color: '#FF3B30' }]}>Hủy</ThemedText>
+            </TouchableOpacity>
+          ) : joined && (
+            <TouchableOpacity
+              onPress={() => unjoin()}
+              style={[styles.gridActionButton, { backgroundColor: buttonBackgroundColor, borderColor }]}
+            >
+              <MaterialIcons
+                name="output"
+                size={24}
+                color="#FF3B30"
+              />
+              <ThemedText type="body2Regular" style={[styles.actionButtonText, { color: '#FF3B30' }]}>Hủy tham gia</ThemedText>
+            </TouchableOpacity>
+          )}
         </View>
-      )}
+      </View>
 
       <ThemedText style={[styles.subtitle, { borderBottomColor: borderColor }]}>Thống kê thành viên</ThemedText>
       <View
