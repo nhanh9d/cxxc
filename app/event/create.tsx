@@ -48,6 +48,9 @@ export default function CreateScreen() {
 
   const { uploadImage } = useImageUpload();
   const chooseImage = async () => {
+    // Dismiss keyboard before opening image picker
+    Keyboard.dismiss();
+    
     const imageUrl = await uploadImage({ aspect: [3, 2] });
     if (imageUrl) {
       setEvent({ ...event, banner: imageUrl });
